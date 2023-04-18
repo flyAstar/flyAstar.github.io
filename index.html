@@ -66,6 +66,7 @@
                             <li class="menu-item"><a href="#doctor" class="nav-link tm-smooth-move">团队成员</a></li>
                             <li class="menu-item"><a href="#gallery" class="nav-link tm-smooth-move">开发过程</a></li>
                             <li class="menu-item"><a href="#price" class="nav-link tm-smooth-move">产品定价</a></li>
+                            <li class="menu-item"><a href="#problems" class="nav-link tm-smooth-move">常见问题</a></li>
                             <li class="menu-item menu-item-has-children"><a href="#blog" class="nav-link tm-smooth-move">新闻资讯</a>
                                 <ul>
                                     <li class="menu-item"><a href="blog-right-sidebar.html">Blog Right Sidebar</a></li>
@@ -76,8 +77,7 @@
                                     <li class="menu-item"><a href="blog-details-full-width.html">Single Blog Video Post</a></li>
                                 </ul>
                             </li>
-                            <li class="menu-item"><a href="#contact" class="nav-link tm-smooth-move">联系我们</a></li>
-                            <li class="menu-item"><a href="#appointment" class="nav-link tm-smooth-move">APPOINTMENT</a></li>
+                            <li class="menu-item"><a href="#appointment" class="nav-link tm-smooth-move">预约了解</a></li>
                         </ul>
                     </nav>
                 </div><!-- .tm-header-menu-container -->
@@ -235,7 +235,7 @@
     <section class="tm-gray-bg" id="department">
         <div class="empty-space col-md-b100 col-xs-b70"></div>
         <div class="tm-section-heading text-center">
-            <h2>Our Department</h2>
+            <h2>技术架构</h2>
             <div class="tm-section-seperator"><span></span></div>
             <div class="empty-space col-md-b60 col-xs-b40"></div>
         </div>
@@ -243,12 +243,12 @@
             <div class="tm-tab-wrap">
                 <div class="tm-tabs-wrap">
                     <ul class="tabs">
-                        <li><i class="icofont icofont-tooth"></i>DENTAL CARE</li>
-                        <li><i class="icofont icofont-brain"></i>NEUROLOGY</li>
-                        <li><i class="icofont icofont-crutches"></i>CRUTCHES</li>
-                        <li><i class="icofont icofont-pulse"></i>CARDIOLOGY</li>
-                        <li><i class="icofont icofont-lungs"></i>PULMONARY</li>
-                        <li><i class="icofont icofont-xray"></i>X-RAY</li>
+                        <li><i class="icofont icofont-star"></i>传感器</li>
+                        <li><i class="icofont icofont-hand"></i>手套</li>
+                        <li><i class="icofont icofont-android"></i>安卓软件</li>
+                        <li><i class="icofont icofont-heart"></i>云端</li>
+                        <li><i class="icofont icofont-brain"></i>深度学习</li>
+                        <li><i class="icofont icofont-dianzan"></i>X-RAY</li>
                     </ul> <!-- .tabs -->
                 </div>
                 <div class="empty-space col-md-b60 col-xs-b40"></div>
@@ -392,91 +392,6 @@
         <div class="empty-space col-md-b100 col-xs-b70"></div>
     </section>
     <!-- End Department Section -->
-
-    <!-- Start Appointment Section -->
-    <section class="tm-relative" id="appointment">
-        <div class="tm-half-section-bg right">
-            <img src="assets/img/appointment-bg.jpg" alt="about hafl bg">
-        </div>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-7 tm-hf-hide">
-                    <div class="empty-space col-md-b0 col-xs-b70"></div>
-                    <div class="tm-appointment-heading tm-gray-bg wow fadeInLeft" data-wow-duration="1s" data-wow-delay="0.1s">
-                        <div class="tm-section-heading text-center">
-                            <h2>预约了解</h2>
-                            <div class="tm-section-seperator"><span></span></div>
-                            <p>如果您不愿意填写完整信息，也可以填写您的基础信息和联系方式，1个工作日内会有相应工作人员联系您</p>
-							<p>*您的一切个人信息仅为后期联系使用，不会用于其他用途，请放心填写</p>
-                        </div>
-                    </div>
-                </div><!-- .col -->
-                <div class="col-lg-5">
-                    <div class="empty-space col-md-b60 col-xs-b40"></div>
-                    <form method="POST" action="assets/php/appointment.php" class="tm-appointment-form" id="appointment-form">
-                        <div id="tm-alert1"></div>
-                        <div class="tm-form-field">      
-                            <input type="text" id="uname" name="uname" placeholder="姓名" required>
-                            <span class="bar"></span>
-                        </div>
-                        <div class="tm-form-field">      
-                            <input type="text" id="uemail" name="uemail" placeholder="邮箱" required>
-                            <span class="bar"></span>
-                        </div>
-                        <div class="tm-form-field">      
-                            <input type="text" id="unumber" name="unumber" placeholder="手机号码" required>
-                            <span class="bar"></span>
-                        </div>
-                        <div class="tm-form-field">      
-                            <input name="udate" type="text" id="udate" placeholder="预约日期">
-                            <span class="bar"></span>
-                            <div class="date-icon"><i class="fa fa-calendar"></i></div>
-                        </div>
-                        <!--
-						 预约部门有选项 --han
-						 <div class="tm-form-field">
-                            <div class="tm-custom-select-wrap">
-                                <select name="udepartment" class="tm-custom-select" id="udepartment">
-                                    <option value="department">Department</option>
-                                    <option value="dental-care">Dental Care</option>
-                                    <option value="neurology">Neurology</option>
-                                    <option value="crutches">Crutches</option>
-                                    <option value="cardiology">Cardiology</option>
-                                    <option value="pulmonary">Pulmonary</option>
-                                    <option value="x-ray">X-Ray</option>
-                                </select> 
-                            </div>
-                        </div> -->
-                        <!-- 
-						预约个别医生 --han
-						<div class="tm-form-field">      
-                            <div class="tm-custom-select-wrap">
-                                <select name="udoctor" class="tm-custom-select" id="udoctor">
-                                    <option value="doctor">Doctor</option>
-                                    <option value="jhon-doe">Dr. Jhon Doe</option>
-                                    <option value="mak-rushi">Dr. Mak Roshi</option>
-                                    <option value="mohoshin-kabir">Dr. Mohoshin Kabir</option>
-                                    <option value="nayon-borua">Dr. Nayon Borua</option>
-                                    <option value="rasel-islam">Dr. Rasel Islam</option>
-                                    <option value="mahid-islam">Dr. Mahid Islam</option>
-                                </select> 
-                            </div>
-                        </div> -->
-                        <div class="tm-form-field">      
-                            <textarea cols="30" rows="10" id="umsg" name="umsg" placeholder="您想了解的内容和身体状况"></textarea>
-                            <span class="bar"></span>
-                        </div>
-                        <div class="empty-space col-xs-b10"></div>
-                        <div class="tm-form-field">      
-                            <button class="tm-btn1 tm-reverse" type="submit" id="appointment-submit" name="submit">BOOK APPOINTMENT</button>
-                        </div>
-                    </form>
-                    <div class="empty-space col-md-b60 col-xs-b70"></div>
-                </div><!-- .col -->
-            </div>
-        </div>
-    </section>
-    <!-- End Appointment Section -->
 
     <!-- Start Team Member -->
     <section id="doctor">
@@ -762,38 +677,6 @@
     </section>
     <!-- End Team Member -->
 
-    <!-- Start Before & After Section -->
-    <section class="tm-gray-bg">
-        <div class="empty-space col-md-b100 col-xs-b70"></div>
-        <div class="tm-section-heading text-center">
-            <h2>Before After Gallery</h2>
-            <div class="tm-section-seperator"><span></span></div>
-            <div class="empty-space col-md-b60 col-xs-b40"></div>
-        </div>
-        <div class="container">
-            <div class="before-after-gallery-slider owl-carousel tm-nam-tm-style1">
-                <div class="teeth-beforeafter">
-                    <img src="assets/img/teeth-before-image.jpg" alt="teeth before">
-                    <img src="assets/img/teeth-after-image.jpg" alt="teeth after">
-                </div>
-                <div class="teeth-beforeafter">
-                    <img src="assets/img/face-before-image.jpg" alt="teeth before">
-                    <img src="assets/img/face-after-image.jpg" alt="teeth after">
-                </div>
-                <div class="teeth-beforeafter">
-                    <img src="assets/img/teeth-before-image.jpg" alt="teeth before">
-                    <img src="assets/img/teeth-after-image.jpg" alt="teeth after">
-                </div>
-                <div class="teeth-beforeafter">
-                    <img src="assets/img/face-before-image.jpg" alt="teeth before">
-                    <img src="assets/img/face-after-image.jpg" alt="teeth after">
-                </div>
-            </div>
-        </div>
-        <div class="empty-space col-md-b100 col-xs-b70"></div>
-    </section>
-    <!-- End Before & After Section -->
-
     <!-- Start Gallery Section -->
     <section id="gallery">
         <div class="empty-space col-md-b100 col-xs-b70"></div>
@@ -1048,7 +931,7 @@
     <!-- End Pricing Seciton -->
 
     <!-- Start FAQ Section -->
-    <section class="tm-gray-bg tm-overflow-hide">
+    <section class="tm-gray-bg tm-overflow-hide" id="problems">
         <div class="row">
             <div class="col-lg-6">
                 <!-- For Vimeo Video -->
@@ -1068,18 +951,18 @@
             <div class="col-lg-6">
                 <div class="empty-space col-md-b60 col-xs-b65"></div>
                 <div class="accordian-wrapper">
-                    <h2 class="accordian-heading">Frequently Asked Questions</h2>
+                    <h2 class="accordian-heading">常见问题</h2>
                     <div class="accordian">
                         <div class="single-accordian">
-                            <h3 class="accordian-head">What is dental care?</h3>
+                            <h3 class="accordian-head">什么是手语翻译，产品的科学依据是什么？</h3>
                             <div class="accordian-body">Tooth valuable resources, dental care should take us regularly to stay healthy. Oral Health Overview. Good dental or oral care is important to maintaining healthy teeth, gums, and tongue. Oral problems, including bad breath, dry mouth, canker or cold sores, TMD, tooth decay, or thrush are all treatable with proper diagnosis and care.</div>
                         </div><!-- .single-accordian -->
                         <div class="single-accordian">
-                            <h3 class="accordian-head">Does offer emergency care?</h3>
+                            <h3 class="accordian-head">相较于同类产品有哪些优势？</h3>
                             <div class="accordian-body">Urgent care centers are a relatively new addition to the healthcare industry that have helped to benefit both community medical services and patients. As a fast, affordable alternative to emergency room care for patients with non-life-threatening conditions, urgent care medical clinics offer people a convenient treatment option.</div>
                         </div><!-- .single-accordian -->
                         <div class="single-accordian">
-                            <h3 class="accordian-head">Online live support</h3>
+                            <h3 class="accordian-head">这个产品的普遍应用场景是什么？</h3>
                             <div class="accordian-body">Neurology is a branch of medical science that is concerned with disorders and diseases of the nervous system. The term neurology comes from a combination of two words - "neuron" meaning nerve and "logia" meaning "the study of".There are around a hundred billion neurons in the brain, capable of generating their own impulses and of receiving and transmitting impulses from neighboring cells.</div>
                         </div><!-- .single-accordian -->
                     </div>
@@ -1094,7 +977,7 @@
     <section id="blog">
         <div class="empty-space col-md-b100 col-xs-b70"></div>
         <div class="tm-section-heading text-center">
-            <h2>LATEST NEWS</h2>
+            <h2>新闻资讯</h2>
             <div class="tm-section-seperator"><span></span></div>
             <div class="empty-space col-md-b60 col-xs-b40"></div>
         </div>
@@ -1226,130 +1109,90 @@
     </section>
     <!-- End Blog Section -->
 
-    <!-- Start News Letter Section -->
-    <div class="tm-newsletter tm-bg">
-        <div class="tm-nl-overlay"></div>
-        <div class="empty-space col-md-b100 col-xs-b70"></div>
-        <div class="container">
-            <form class="mailchimp" action="https://storerepublic.us12.list-manage.com/subscribe/post?u=d227d8d335060b093084903d0&amp;id=9ba078ceb0">
-                <div class="tm-form-field">
-                    <input type="email" name="subscribe" id="subscriber-email" placeholder="Enter your Email Address">
-                    <span class="bar"></span>
-                </div>
-                <button type="submit" id="subscribe-button" class="tm-btn1 tm-reverse"><span><i class="icofont icofont-location-arrow"></i>SUBSCRIBE NOW</span></button>
-                <!-- SUBSCRIPTION SUCCESSFUL OR ERROR MESSAGES -->
-                <h5 class="subscription-success"> .</h5>
-                <h5 class="subscription-error"> .</h5>
-                <label class="subscription-label" for="subscriber-email"></label>
-            </form>
-        </div>
-        <div class="empty-space col-md-b100 col-xs-b70"></div>
-    </div>
-    <!-- End News Letter Section -->
-
-    <!-- Start Contact Section -->
-    <section id="contact">
-        <div class="empty-space col-md-b100 col-xs-b70"></div>
-        <div class="tm-section-heading text-center">
-            <h2>Get In Touch</h2>
-            <div class="tm-section-seperator"><span></span></div>
-            <div class="empty-space col-md-b60 col-xs-b40"></div>
+    <!-- Start Appointment Section -->
+    <section class="tm-relative" id="appointment">
+        <div class="tm-half-section-bg right">
+            <img src="assets/img/appointment-bg.jpg" alt="about hafl bg">
         </div>
         <div class="container">
             <div class="row">
-                <div class="col-lg-8">
-                    <div id="tm-alert"></div>
-                    <form action="assets/php/mail.php" class="row tm-contact-form" method="post"  id="contact-form">
-                        <div class="col-lg-6">
-                            <div class="tm-form-field">      
-                                <input type="text" id="name" name="name" required>
-                                <label>Full Name</label>
-                            </div>
-                        </div><!-- .col -->
-                        <div class="col-lg-6">
-                            <div class="tm-form-field">      
-                              <input type="text" id="email" name="email" required>
-                              <label>Email Address</label>
-                          </div>
-                        </div><!-- .col -->
-                        <div class="col-lg-6">
-                            <div class="tm-form-field">      
-                                <input type="text" id="subject" name="subject" required>
-                                <label>Subject</label>
-                            </div>
-                        </div><!-- .col -->
-                        <div class="col-lg-6">
-                            <div class="tm-form-field">      
-                                <input type="text" id="phone" name="phone" required>
-                                <label>Phone</label>
-                            </div>
-                        </div><!-- .col -->
-                        <div class="col-lg-12">
-                            <div class="tm-form-field">      
-                                <textarea cols="30" rows="10" id="msg" name="msg" required></textarea>
-                                <label>Your Message</label>
-                            </div>
-                        </div><!-- .col -->
-                        <div class="col-lg-12">
-                            <button class="tm-btn1" type="submit" id="submit" name="submit"><span>SEND MESSAGE</span></button>
-                            <div class="empty-space col-lg-b30"></div>
-                        </div><!-- .col -->
-                    </form>
-                </div><!-- .col -->
-                <div class="col-lg-4">
-                    <div class="empty-space col-md-b0 col-xs-b40"></div>
-                    <div class="tm-contact-info">
-                        <div class="tm-single-contact">
-                            <i class="fa fa-map-marker"></i>
-                            <h3>Address</h3>
-                            <p>2855 Speer Blvd, Denver, CO 80211, USA</p>
+                <div class="col-lg-7 tm-hf-hide">
+                    <div class="empty-space col-md-b0 col-xs-b70"></div>
+                    <div class="tm-appointment-heading tm-gray-bg wow fadeInLeft" data-wow-duration="1s" data-wow-delay="0.1s">
+                        <div class="tm-section-heading text-center">
+                            <h2>预约了解</h2>
+                            <div class="tm-section-seperator"><span></span></div>
+                            <p>如果您不愿意填写完整信息，也可以填写您的基础信息和联系方式，1个工作日内会有相应工作人员联系您</p>
+							<p>*您的一切个人信息仅为后期联系使用，不会用于其他用途，请放心填写</p>
                         </div>
-                        <div class="empty-space col-xs-b25"></div>
-                        <div class="tm-single-contact">
-                            <i class="fa fa-phone"></i>
-                            <h3>Phone</h3>
-                            <p>1-800-915-6270 <br>
-                               1-800-915-6272</p>
-                        </div>
-                        <div class="empty-space col-xs-b25"></div>
-                        <div class="tm-single-contact">
-                            <i class="fa fa-envelope"></i>
-                            <h3>Email</h3>
-                            <p>info@trustlife.com <br>
-                            Skype: example</p>
-                        </div>
-                        <div class="empty-space col-xs-b25"></div>
                     </div>
                 </div><!-- .col -->
+                <div class="col-lg-5">
+                    <div class="empty-space col-md-b60 col-xs-b40"></div>
+                    <form method="POST" action="assets/php/appointment.php" class="tm-appointment-form" id="appointment-form">
+                        <div id="tm-alert1"></div>
+                        <div class="tm-form-field">      
+                            <input type="text" id="uname" name="uname" placeholder="姓名" required>
+                            <span class="bar"></span>
+                        </div>
+                        <div class="tm-form-field">      
+                            <input type="text" id="uemail" name="uemail" placeholder="邮箱" required>
+                            <span class="bar"></span>
+                        </div>
+                        <div class="tm-form-field">      
+                            <input type="text" id="unumber" name="unumber" placeholder="手机号码" required>
+                            <span class="bar"></span>
+                        </div>
+                        <div class="tm-form-field">      
+                            <input name="udate" type="text" id="udate" placeholder="预约日期">
+                            <span class="bar"></span>
+                            <div class="date-icon"><i class="fa fa-calendar"></i></div>
+                        </div>
+                        <!--
+						 预约部门有选项 --han
+						 <div class="tm-form-field">
+                            <div class="tm-custom-select-wrap">
+                                <select name="udepartment" class="tm-custom-select" id="udepartment">
+                                    <option value="department">Department</option>
+                                    <option value="dental-care">Dental Care</option>
+                                    <option value="neurology">Neurology</option>
+                                    <option value="crutches">Crutches</option>
+                                    <option value="cardiology">Cardiology</option>
+                                    <option value="pulmonary">Pulmonary</option>
+                                    <option value="x-ray">X-Ray</option>
+                                </select> 
+                            </div>
+                        </div> -->
+                        <!-- 
+						预约个别医生 --han
+						<div class="tm-form-field">      
+                            <div class="tm-custom-select-wrap">
+                                <select name="udoctor" class="tm-custom-select" id="udoctor">
+                                    <option value="doctor">Doctor</option>
+                                    <option value="jhon-doe">Dr. Jhon Doe</option>
+                                    <option value="mak-rushi">Dr. Mak Roshi</option>
+                                    <option value="mohoshin-kabir">Dr. Mohoshin Kabir</option>
+                                    <option value="nayon-borua">Dr. Nayon Borua</option>
+                                    <option value="rasel-islam">Dr. Rasel Islam</option>
+                                    <option value="mahid-islam">Dr. Mahid Islam</option>
+                                </select> 
+                            </div>
+                        </div> -->
+                        <div class="tm-form-field">      
+                            <textarea cols="30" rows="10" id="umsg" name="umsg" placeholder="您想了解的内容和身体状况"></textarea>
+                            <span class="bar"></span>
+                        </div>
+                        <div class="empty-space col-xs-b10"></div>
+                        <div class="tm-form-field">      
+                            <button class="tm-btn1 tm-reverse" type="submit" id="appointment-submit" name="submit">BOOK APPOINTMENT</button>
+                        </div>
+                    </form>
+                    <div class="empty-space col-md-b60 col-xs-b70"></div>
+                </div><!-- .col -->
             </div>
         </div>
-        <div class="empty-space col-md-b70 col-xs-b40"></div>
     </section>
-    <!-- End Contact Section -->
-
-    <!-- Start Map Section -->
-    <div id="tm-map">
-	    <iframe src="http://ditu.google.cn/maps/embed?pb=!1m18!1m12!1m3!1d96652.27317354927!2d-74.33557928194516!3d40.79756494697628!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c3a82f1352d0dd%3A0x81d4f72c4435aab5!2sTroy+Meadows+Wetlands!5e0!3m2!1sen!2sbd!4v1563075599994!5m2!1sen!2sbd"
-        allowfullscreen></iframe>
-	</div>
-    <!-- End Map Section -->
-
-    <!-- Start Clients Section -->
-    <div class="tm-clients-wrap">
-        <div class="empty-space col-md-b100 col-xs-b70"></div>
-        <div class="container">
-            <div class="tm-clients-curosor owl-carousel">
-                <div class="tm-client"><img src="assets/img/client-logo-01.png" alt=""></div>
-                <div class="tm-client"><img src="assets/img/client-logo-02.png" alt=""></div>
-                <div class="tm-client"><img src="assets/img/client-logo-03.png" alt=""></div>
-                <div class="tm-client"><img src="assets/img/client-logo-04.png" alt=""></div>
-                <div class="tm-client"><img src="assets/img/client-logo-05.png" alt=""></div>
-                <div class="tm-client"><img src="assets/img/client-logo-06.png" alt=""></div>
-            </div>
-        </div>
-        <div class="empty-space col-md-b100 col-xs-b70"></div>
-    </div>
-    <!-- End Clients Section -->
+    <!-- End Appointment Section -->
 
     <!-- Start Footer -->
     <footer class="tm-overflow-hidden">

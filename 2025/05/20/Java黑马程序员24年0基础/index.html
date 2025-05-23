@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="零基础视频，面向对象开始跳着进度条看，有什么感兴趣的搜索+敲代码实现即可 学习原因：未来掌握Java反序列化  123456789101112131415161718课程目录：每天及其内容day01：222（Java入门、IDEA、基础语法）day02：152（基础语法）day03：184（基础语法、综合实战）day04：105（数组）day05：183（面向对象编程基础语法）day06：179">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java黑马程序员24年0基础">
+<meta property="og:url" content="http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="零基础视频，面向对象开始跳着进度条看，有什么感兴趣的搜索+敲代码实现即可 学习原因：未来掌握Java反序列化  123456789101112131415161718课程目录：每天及其内容day01：222（Java入门、IDEA、基础语法）day02：152（基础语法）day03：184（基础语法、综合实战）day04：105（数组）day05：183（面向对象编程基础语法）day06：179">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2025-05-20T05:22:00.000Z">
+<meta property="article:modified_time" content="2025-05-21T16:18:36.295Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Java黑马程序员24年0基础</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2025/05/20/Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2025/04/22/%E7%8E%84%E6%9C%BA%E9%9D%B6%E5%9C%BA-%E7%AC%AC%E5%85%AB%E7%AB%A0-%E5%86%85%E5%AD%98%E9%A9%AC%E5%88%86%E6%9E%90-fastjson%EF%BC%8Cshiro%EF%BC%8Cnacos/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/&text=Java黑马程序员24年0基础"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/&title=Java黑马程序员24年0基础"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/&is_video=false&description=Java黑马程序员24年0基础"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Java黑马程序员24年0基础&body=Check out this article: http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/&title=Java黑马程序员24年0基础"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/&title=Java黑马程序员24年0基础"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/&title=Java黑马程序员24年0基础"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/&title=Java黑马程序员24年0基础"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/&name=Java黑马程序员24年0基础&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/&t=Java黑马程序员24年0基础"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Java%E9%85%8D%E7%BD%AE"><span class="toc-number">1.</span> <span class="toc-text">Java配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1"><span class="toc-number">2.</span> <span class="toc-text">Java面向对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%9D%97"><span class="toc-number">2.1.</span> <span class="toc-text">代码块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E9%83%A8%E7%B1%BB"><span class="toc-number">2.2.</span> <span class="toc-text">内部类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8C%BF%E5%90%8D%E5%86%85%E9%83%A8%E7%B1%BB"><span class="toc-number">2.3.</span> <span class="toc-text">匿名内部类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B"><span class="toc-number">2.4.</span> <span class="toc-text">函数式编程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E5%BC%95%E7%94%A8"><span class="toc-number">2.4.1.</span> <span class="toc-text">方法引用</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Java黑马程序员24年0基础
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">John Doe</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-05-20T05:22:00.000Z" class="dt-published" itemprop="datePublished">2025-05-20</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <blockquote>
+<p>零基础视频，面向对象开始跳着进度条看，有什么感兴趣的搜索+敲代码实现即可</p>
+<p>学习原因：未来掌握Java反序列化</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">课程目录：每天及其内容</span><br><span class="line">day01：222（Java入门、IDEA、基础语法）</span><br><span class="line">day02：152（基础语法）</span><br><span class="line">day03：184（基础语法、综合实战）</span><br><span class="line">day04：105（数组）</span><br><span class="line">day05：183（面向对象编程基础语法）</span><br><span class="line">day06：179（继承、多态）</span><br><span class="line">day07：242（枚举、抽象类、接口）</span><br><span class="line">day08：280（类、函数式编程、常用API、GUI）</span><br><span class="line">项目实战1：126（人事系统）</span><br><span class="line">项目实战2：121（游戏开发）</span><br><span class="line">加强1：314（异常、泛型、Collection、List）</span><br><span class="line">加强2：278（SET、MAP、Stream）</span><br><span class="line">加强3：360（File、递归、IO流）</span><br><span class="line">加强4：210（多线程、线程池）</span><br><span class="line">加强5：154（网络编程）</span><br><span class="line">项目实战3：180（即时通讯）</span><br><span class="line">高级技术：213</span><br></pre></td></tr></table></figure>
+
+<h2 id="Java配置"><a href="#Java配置" class="headerlink" title="Java配置"></a>Java配置</h2><p>JVM+核心类库&#x3D;JRE运行环境+JAVA（JAVAC）&#x3D;JDK（java开发工具包）</p>
+<p>代码文件 .java</p>
+<p>编译：javac；运行：java</p>
+<p>project moudle package class</p>
+<p>包名 com.domain.project</p>
+<p>src main</p>
+<p>AI插件</p>
+<p>字体外观设置等</p>
+<p>双击out下反编译</p>
+<p>方法重载 同名</p>
+<p>表达式自动转换</p>
+<p>scanner获取输入要new对象</p>
+<p>一个包下的Java文件，class能直接写</p>
+<p>构造器</p>
+<h2 id="Java面向对象"><a href="#Java面向对象" class="headerlink" title="Java面向对象"></a>Java面向对象</h2><p>this</p>
+<p>实体类</p>
+<p>实例变量每个对象持有一份，静态变量一个，会出现覆盖</p>
+<p>如果方法不需要直接访问对象的数据，可以使用静态方法【工具类的构造器可以私有】</p>
+<blockquote>
+<p>确实，懂了之后感觉还是很有美感的</p>
+</blockquote>
+<p>引用类型，装电影对象</p>
+<p>看了这一集，才明白为什么之前大一作业java学生管理系统，被说没有用到面向对象了</p>
+<p>不过参数的名字具体怎么命名和赋值不太了解</p>
+<p>继承 缺省：当前类，同包其他类</p>
+<p>override注解：方法重写</p>
+<p>tostring</p>
+<p>this调用本类中其他构造器，和super有哪些注意的</p>
+<p>多态下类型转换</p>
+<p>final：变量有且只能赋值一次</p>
+<p>final地址指向的内容可以改变</p>
+<p>常量会被“宏替换”，变成字面量</p>
+<p>单例类：确保某个类只能创建一个对象</p>
+<p>在获取对象时，已经创建好</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">A</span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="type">A</span> <span class="variable">a</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">A</span>();<span class="comment">//私有，使对象无法修改</span></span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">A</span><span class="params">()</span>&#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> A <span class="title function_">getInstance</span><span class="params">()</span>&#123;<span class="comment">//公开，返回类的唯一对象</span></span><br><span class="line">    <span class="keyword">return</span> a;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>延迟加载对象：getInstance时判断是否为null，然后new</p>
+<p>枚举类enum：</p>
+<p>第一行：每个常量记住了枚举类的对象</p>
+<p>Xjad  </p>
+<p>javap反编译命令</p>
+<p>抽象类</p>
+<p>abstract：修饰类或方法，不能有方法体；抽象类能抽象方法，不能创建对象</p>
+<p>抽象类就是为了被继承；继承后必须重写所有的抽象方法</p>
+<p>模版方法</p>
+<p>接口</p>
+<p>一个类可以实现多个接口</p>
+<p>修饰符 class 实现类类名 implements 接口1，接口2</p>
+<p>lombok</p>
+<p> jdk8后三种方式：默认方法、私有方法、静态方法</p>
+<p>确实，这里听着像是打补丁，以后需要再说</p>
+<p>智能家居系统看老师敲的很顺</p>
+<h3 id="代码块"><a href="#代码块" class="headerlink" title="代码块"></a>代码块</h3><p>静态代码块：static{} 类加载时自动执行，只执行一次，初始化赋值</p>
+<p>实例代码块：单独{} new对象时执行</p>
+<h3 id="内部类"><a href="#内部类" class="headerlink" title="内部类"></a>内部类</h3><p>类定义在另一个类的内部</p>
+<p>外部类对象.内部类对象 对象名&#x3D;new 外部类名称().new 内部类名称</p>
+<blockquote>
+<p>学习的目的是为了以后能看懂别人的代码</p>
+</blockquote>
+<h3 id="匿名内部类"><a href="#匿名内部类" class="headerlink" title="匿名内部类"></a>匿名内部类</h3><p>特殊的局部内部类；不需要为类声明名字，默认有隐藏的名字</p>
+<p>new 类或接口(){ }</p>
+<p>本质是子类，立即创建出子类对象</p>
+<h3 id="函数式编程"><a href="#函数式编程" class="headerlink" title="函数式编程"></a>函数式编程</h3><p>Lambda只能简化函数式接口的匿名内部类</p>
+<blockquote>
+<p>听到Lambda，可能不专心，看不懂操作了</p>
+</blockquote>
+<p>逐渐简化，但是对于0基础，可读性变差</p>
+<h4 id="方法引用"><a href="#方法引用" class="headerlink" title="方法引用"></a>方法引用</h4><p>类名::静态方法</p>
+<p>只是调用一个静态方法，-&gt;箭头前后参数形式一致，可使用</p>
+<p>equal 相等比较，直接双等号比较地址</p>
+<p>new string 构造器</p>
+<p>很多讲的是代码规范的问题，但是学习能帮助我未来阅读源码</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Java%E9%85%8D%E7%BD%AE"><span class="toc-number">1.</span> <span class="toc-text">Java配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Java%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1"><span class="toc-number">2.</span> <span class="toc-text">Java面向对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%9D%97"><span class="toc-number">2.1.</span> <span class="toc-text">代码块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%85%E9%83%A8%E7%B1%BB"><span class="toc-number">2.2.</span> <span class="toc-text">内部类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8C%BF%E5%90%8D%E5%86%85%E9%83%A8%E7%B1%BB"><span class="toc-number">2.3.</span> <span class="toc-text">匿名内部类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E5%BC%8F%E7%BC%96%E7%A8%8B"><span class="toc-number">2.4.</span> <span class="toc-text">函数式编程</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%E5%BC%95%E7%94%A8"><span class="toc-number">2.4.1.</span> <span class="toc-text">方法引用</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/&text=Java黑马程序员24年0基础"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/&title=Java黑马程序员24年0基础"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/&is_video=false&description=Java黑马程序员24年0基础"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Java黑马程序员24年0基础&body=Check out this article: http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/&title=Java黑马程序员24年0基础"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/&title=Java黑马程序员24年0基础"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/&title=Java黑马程序员24年0基础"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/&title=Java黑马程序员24年0基础"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/&name=Java黑马程序员24年0基础&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2025/05/20/Java%E9%BB%91%E9%A9%AC%E7%A8%8B%E5%BA%8F%E5%91%9824%E5%B9%B40%E5%9F%BA%E7%A1%80/&t=Java黑马程序员24年0基础"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2025
+    John Doe
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

@@ -6,15 +6,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta name="description" content="很出名，学校打印机程序发现后台网站是ruoyi，（特征：加载资源和后台登录系统），于是搜网上漏洞复现来看 搭建：  PHPmyadmin 开启apache和mysql，用于装入数据库  Idea+源码， 首先配置Maven环境，然后调整poe.xml配置   弱口令：登录页以及druid页面渗透页面 SQL注入：在&#x2F;system&#x2F;role&#x2F;list接口的params[">
+    <meta name="description" content="很出名，学校打印机程序发现后台网站是ruoyi，（特征：加载资源和后台登录系统），于是搜网上漏洞复现来看 搭建：  PHPmyadmin 开启apache和mysql，用于装入数据库  Idea+源码， 首先配置Maven环境，然后调整poe.xml配置   弱口令：登录页以及druid页面渗透页面 druid是关于数据库池的工具 Druid到获取未授权路由：&#x2F;druid&#x2F;we">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Ruoyi系统的常见漏洞与复现">
 <meta property="og:url" content="http://example.com/2025/05/23/Ruoyi%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%B8%B8%E8%A7%81%E6%BC%8F%E6%B4%9E%E4%B8%8E%E5%A4%8D%E7%8E%B0/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="很出名，学校打印机程序发现后台网站是ruoyi，（特征：加载资源和后台登录系统），于是搜网上漏洞复现来看 搭建：  PHPmyadmin 开启apache和mysql，用于装入数据库  Idea+源码， 首先配置Maven环境，然后调整poe.xml配置   弱口令：登录页以及druid页面渗透页面 SQL注入：在&#x2F;system&#x2F;role&#x2F;list接口的params[">
+<meta property="og:description" content="很出名，学校打印机程序发现后台网站是ruoyi，（特征：加载资源和后台登录系统），于是搜网上漏洞复现来看 搭建：  PHPmyadmin 开启apache和mysql，用于装入数据库  Idea+源码， 首先配置Maven环境，然后调整poe.xml配置   弱口令：登录页以及druid页面渗透页面 druid是关于数据库池的工具 Druid到获取未授权路由：&#x2F;druid&#x2F;we">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2025-05-23T14:35:07.000Z">
-<meta property="article:modified_time" content="2025-05-23T14:36:40.673Z">
+<meta property="article:modified_time" content="2025-05-24T03:47:05.995Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
     
@@ -159,8 +159,15 @@
 </li>
 </ul>
 <p>弱口令：登录页以及druid页面渗透页面</p>
+<p>druid是关于数据库池的工具</p>
+<p>Druid到获取未授权路由：&#x2F;druid&#x2F;weburi.html</p>
+<p>redirect 几乎都会报错，后端没有开启这个功能</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/zkaqlaoniao/article/details/132883999">SRC之若依系统恰分攻略-2_若依任意用户注册-CSDN博客</a></p>
 <p>SQL注入：在&#x2F;system&#x2F;role&#x2F;list接口的params[dataScope]参数</p>
 <p>若依工具检测</p>
+<p>工具相较于POC可能失败</p>
+<p>snakeYaml 定时任务利用 yaml payload master 修改IP 重新编译</p>
+<p>最后fastjson反弹shell真酷，yakit，<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1AbPJe8EoY/?spm_id_from=333.337.search-card.all.click&vd_source=9e9c7c37813cfda90c0b207391e15a81">若依Nday漏洞复现_哔哩哔哩_bilibili</a></p>
 
   </div>
 </article>

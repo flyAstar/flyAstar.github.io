@@ -14,7 +14,7 @@
 <meta property="og:description" content="thinkphp有内置过滤sql；相比原生态 特定版本的sql注入 逻辑越权 sql注入插值实现修改uid 普通到管理员  暂且把前两集的php也放在这里  本期直接从JAVA EE讲起，听上去还是比较困难 Servelet、预编译Servlet：在JavaEE平台上，处理TCP连接，解析HTTP协议这些底层工作统统扔给现成的Web服务器去做，我们只需要把自己的应用程序跑在Web服务器上。为了实现">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2025-07-11T04:10:39.000Z">
-<meta property="article:modified_time" content="2025-07-13T14:17:58.355Z">
+<meta property="article:modified_time" content="2025-07-15T15:54:31.395Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
     
@@ -114,7 +114,7 @@
     
     
       <div id="toc">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Servelet%E3%80%81%E9%A2%84%E7%BC%96%E8%AF%91"><span class="toc-number">1.</span> <span class="toc-text">Servelet、预编译</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E9%A9%AC"><span class="toc-number">2.</span> <span class="toc-text">内存马</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%84%E7%BC%96%E8%AF%91"><span class="toc-number">3.</span> <span class="toc-text">预编译</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Filter%E3%80%81Listener"><span class="toc-number">4.</span> <span class="toc-text">Filter、Listener</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%B0%84"><span class="toc-number">5.</span> <span class="toc-text">反射</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-number">6.</span> <span class="toc-text">序列化</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Servelet%E3%80%81%E9%A2%84%E7%BC%96%E8%AF%91"><span class="toc-number">1.</span> <span class="toc-text">Servelet、预编译</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E9%A9%AC"><span class="toc-number">2.</span> <span class="toc-text">内存马</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%84%E7%BC%96%E8%AF%91"><span class="toc-number">3.</span> <span class="toc-text">预编译</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Filter%E3%80%81Listener"><span class="toc-number">4.</span> <span class="toc-text">Filter、Listener</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%B0%84"><span class="toc-number">5.</span> <span class="toc-text">反射</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-number">6.</span> <span class="toc-text">序列化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Log4j-Fastjson-JNDI%E6%B3%A8%E5%85%A5-36"><span class="toc-number">7.</span> <span class="toc-text">Log4j Fastjson JNDI注入 36</span></a></li></ol>
       </div>
     
   </span>
@@ -181,7 +181,21 @@
 <p>利用ObjectInputStream 读入文件和readobject 实现原生的序列化与反序列化</p>
 <p>重写readobject直接调用危险方法，相当于执行序列化对象的readObeject方法</p>
 <p>步入步出（第三方类）调试 </p>
-<p>48min</p>
+<p>构造函数&#x2F;静态代码块隐式触发：</p>
+<p>包含可控类，里面自带readobject</p>
+<p><code>hashmap&lt;url,integer&gt;</code></p>
+<p>dnslog获取的地址是</p>
+<p>hashcode DNS访问</p>
+<h2 id="Log4j-Fastjson-JNDI注入-36"><a href="#Log4j-Fastjson-JNDI注入-36" class="headerlink" title="Log4j Fastjson JNDI注入 36"></a>Log4j Fastjson JNDI注入 36</h2><p>配置maven，之后<a target="_blank" rel="noopener" href="https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core/2.14.1">Maven Repository: org.apache.logging.log4j » log4j-core » 2.14.1</a>；加载maven更改；外部库就会增加新的第三方库 以后要是对于某个第三方库感兴趣，可以直接在这里看版本对应的CVE，如果深入学习代码审计的话；不过问了GPT也有道理：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">初期重点放在经典组件漏洞的主CVE + 中小型Java项目源码审计，</span><br><span class="line">不需要一开始就去深挖 log4j、shiro 等“不出名的CVE”。</span><br><span class="line"> 不出名的组件CVE学习价值较低（初期）</span><br><span class="line">很多CVE只是补了一点边缘case（例如某版本下某配置才触发），学习成本高但实际复现和实战意义不强。</span><br><span class="line">如果你没有调试经验，理解那些补丁diff反而会卡住你。</span><br><span class="line">大量不出名CVE还涉及跨多个依赖组件，搞清楚依赖链本身就很花时间。</span><br><span class="line">✅ 所以：初学阶段专注于 知名利用链和通用攻击面（反序列化、JNDI、EL表达式注入）收益更高。</span><br><span class="line"> 中小型Java项目源码审计锻炼“代码分析+漏洞定位”的实战能力</span><br><span class="line">真实业务逻辑往往藏着未公开的漏洞，比如：</span><br><span class="line">上传绕过</span><br><span class="line">任意文件读取</span><br><span class="line">接口权限控制不严</span><br><span class="line">它们不会出现在 CVE 数据库里，但在 渗透测试 和 漏洞挖掘 中非常常见。</span><br><span class="line">你会从“看一个完整项目”中，提升审计思维，如：</span><br><span class="line">如何从登录出发找权限控制点？</span><br><span class="line">用户上传的入口在哪？</span><br><span class="line">有没有危险的EL表达式？</span><br><span class="line">✅ 这类练习是你后续能自己写exp/挖day的基础</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>计算机很多实操还是看博客+视频，有个直观的理解，就不困难了</p>
+</blockquote>
+<p>老师手log4j的漏洞利用不限制POC插入位置，想到XSS</p>
+<p><code>$(JAVA:OS)</code></p>
+<p>ldap属于jndi</p>
+<p>在服务器上，通过jndi注入工具，生成</p>
 
   </div>
 </article>
@@ -209,7 +223,7 @@
     
     
       <div id="toc-footer" style="display: none">
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Servelet%E3%80%81%E9%A2%84%E7%BC%96%E8%AF%91"><span class="toc-number">1.</span> <span class="toc-text">Servelet、预编译</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E9%A9%AC"><span class="toc-number">2.</span> <span class="toc-text">内存马</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%84%E7%BC%96%E8%AF%91"><span class="toc-number">3.</span> <span class="toc-text">预编译</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Filter%E3%80%81Listener"><span class="toc-number">4.</span> <span class="toc-text">Filter、Listener</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%B0%84"><span class="toc-number">5.</span> <span class="toc-text">反射</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-number">6.</span> <span class="toc-text">序列化</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Servelet%E3%80%81%E9%A2%84%E7%BC%96%E8%AF%91"><span class="toc-number">1.</span> <span class="toc-text">Servelet、预编译</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E9%A9%AC"><span class="toc-number">2.</span> <span class="toc-text">内存马</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%A2%84%E7%BC%96%E8%AF%91"><span class="toc-number">3.</span> <span class="toc-text">预编译</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Filter%E3%80%81Listener"><span class="toc-number">4.</span> <span class="toc-text">Filter、Listener</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%8F%8D%E5%B0%84"><span class="toc-number">5.</span> <span class="toc-text">反射</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-number">6.</span> <span class="toc-text">序列化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Log4j-Fastjson-JNDI%E6%B3%A8%E5%85%A5-36"><span class="toc-number">7.</span> <span class="toc-text">Log4j Fastjson JNDI注入 36</span></a></li></ol>
       </div>
     
 

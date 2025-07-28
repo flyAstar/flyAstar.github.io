@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="第72天：业务逻辑篇&amp;水平越权&amp;垂直越权&amp;未授权访问&amp;检测插件&amp;SRC项目 「可能之前经常看些SRC的公众号文章，收获甚微，最后的SRC项目也没提供新思路」  Web安全之逻辑漏洞全方位总结 - FreeBuf网络安全行业门户 只是因为比较长，放在这里 水平越权、垂直越权、未授权 一般都是直接手工测试，看数据包、改数据包 MetInfo 修改密码的数据包，直">
+<meta property="og:type" content="article">
+<meta property="og:title" content="逻辑漏洞-小迪安全">
+<meta property="og:url" content="http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="第72天：业务逻辑篇&amp;水平越权&amp;垂直越权&amp;未授权访问&amp;检测插件&amp;SRC项目 「可能之前经常看些SRC的公众号文章，收获甚微，最后的SRC项目也没提供新思路」  Web安全之逻辑漏洞全方位总结 - FreeBuf网络安全行业门户 只是因为比较长，放在这里 水平越权、垂直越权、未授权 一般都是直接手工测试，看数据包、改数据包 MetInfo 修改密码的数据包，直">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2025-07-22T16:22:49.000Z">
+<meta property="article:modified_time" content="2025-07-28T21:07:12.866Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>逻辑漏洞-小迪安全</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&text=逻辑漏洞-小迪安全"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=逻辑漏洞-小迪安全"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&is_video=false&description=逻辑漏洞-小迪安全"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=逻辑漏洞-小迪安全&body=Check out this article: http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=逻辑漏洞-小迪安全"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=逻辑漏洞-小迪安全"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=逻辑漏洞-小迪安全"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=逻辑漏洞-小迪安全"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&name=逻辑漏洞-小迪安全&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&t=逻辑漏洞-小迪安全"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC72%E5%A4%A9%EF%BC%9A%E4%B8%9A%E5%8A%A1%E9%80%BB%E8%BE%91%E7%AF%87-%E6%B0%B4%E5%B9%B3%E8%B6%8A%E6%9D%83-%E5%9E%82%E7%9B%B4%E8%B6%8A%E6%9D%83-%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE-%E6%A3%80%E6%B5%8B%E6%8F%92%E4%BB%B6-SRC%E9%A1%B9%E7%9B%AE"><span class="toc-number">1.</span> <span class="toc-text">第72天：业务逻辑篇&amp;水平越权&amp;垂直越权&amp;未授权访问&amp;检测插件&amp;SRC项目</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC73%E5%A4%A9%EF%BC%9A%E6%94%AF%E4%BB%98%E9%80%BB%E8%BE%91%E7%AF%87-%E7%AF%A1%E6%94%B9%E5%B1%9E%E6%80%A7%E5%80%BC-%E5%B9%B6%E5%8F%91%E7%AD%BE%E7%BA%A6-%E8%B6%8A%E6%9D%83%E7%9B%97%E7%94%A8-%E7%AE%97%E6%B3%95%E6%BA%A2%E5%87%BA-%E6%9B%BF%E6%8D%A2%E5%AF%B9%E5%86%B2"><span class="toc-number">2.</span> <span class="toc-text">第73天：支付逻辑篇&amp;篡改属性值&amp;并发签约&amp;越权盗用&amp;算法溢出&amp;替换对冲</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC74%E5%A4%A9%EF%BC%9A%E6%9C%BA%E5%88%B6%E9%AA%8C%E8%AF%81%E7%AF%87-%E9%87%8D%E5%AE%9A%E5%90%91%E5%8F%91%E9%80%81-%E5%93%8D%E5%BA%94%E7%8A%B6%E6%80%81%E7%A0%81-%E8%B7%B3%E8%BF%87%E6%AD%A5%E9%AA%A4-%E9%AA%8C%E8%AF%81%E7%A0%81%E5%9B%9E%E4%BC%A0-%E6%9E%9A%E4%B8%BE"><span class="toc-number">3.</span> <span class="toc-text">第74天：机制验证篇&amp;重定向发送&amp;响应状态码&amp;跳过步骤&amp;验证码回传&amp;枚举</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC75%E5%A4%A9%EF%BC%9A%E9%AA%8C%E8%AF%81%E7%A0%81%E5%AE%89%E5%85%A8%E7%AF%87-%E6%8E%A5%E5%8F%A3%E6%BB%A5%E7%94%A8-%E8%AF%86%E5%88%AB%E6%8F%92%E4%BB%B6-%E5%A4%8D%E7%94%A8%E7%BB%95%E8%BF%87-%E5%AE%8F%E5%91%BD%E4%BB%A4%E5%A1%AB%E5%85%A5-%E6%BB%91%E5%9D%97%E7%B1%BB"><span class="toc-number">4.</span> <span class="toc-text">第75天：验证码安全篇&amp;接口滥用&amp;识别插件&amp;复用绕过&amp;宏命令填入&amp;滑块类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC76%E5%A4%A9%EF%BC%9AFuzz%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E7%AF%87-JS%E7%AE%97%E6%B3%95%E5%8F%A3%E4%BB%A4-%E9%9A%90%E8%97%8F%E5%8F%82%E6%95%B0-%E7%9B%B2Payload-%E6%9C%AA%E7%9F%A5%E6%96%87%E4%BB%B6%E7%9B%AE%E5%BD%95"><span class="toc-number">5.</span> <span class="toc-text">第76天：Fuzz模糊测试篇&amp;JS算法口令&amp;隐藏参数&amp;盲Payload&amp;未知文件目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC77%E5%A4%A9%EF%BC%9A%E4%B8%9A%E5%8A%A1%E8%AE%BE%E8%AE%A1%E7%AF%87-%E9%9A%90%E7%A7%81%E5%90%88%E8%A7%84%E6%A3%80%E6%B5%8B-URL%E9%87%8D%E5%AE%9A%E5%90%91-%E8%B5%84%E6%BA%90%E6%8B%92%E7%BB%9D%E6%9C%8D%E5%8A%A1-%E9%85%8D%E5%90%88%E9%A1%B9%E7%9B%AE"><span class="toc-number">6.</span> <span class="toc-text">第77天：业务设计篇&amp;隐私合规检测&amp;URL重定向&amp;资源拒绝服务&amp;配合项目</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        逻辑漏洞-小迪安全
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">John Doe</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-07-22T16:22:49.000Z" class="dt-published" itemprop="datePublished">2025-07-23</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="第72天：业务逻辑篇-水平越权-垂直越权-未授权访问-检测插件-SRC项目"><a href="#第72天：业务逻辑篇-水平越权-垂直越权-未授权访问-检测插件-SRC项目" class="headerlink" title="第72天：业务逻辑篇&amp;水平越权&amp;垂直越权&amp;未授权访问&amp;检测插件&amp;SRC项目"></a>第72天：业务逻辑篇&amp;水平越权&amp;垂直越权&amp;未授权访问&amp;检测插件&amp;SRC项目</h2><blockquote>
+<p>「可能之前经常看些SRC的公众号文章，收获甚微，最后的SRC项目也没提供新思路」</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/350865.html">Web安全之逻辑漏洞全方位总结 - FreeBuf网络安全行业门户</a> 只是因为比较长，放在这里</p>
+<p>水平越权、垂直越权、未授权</p>
+<p>一般都是直接手工测试，看数据包、改数据包</p>
+<p>MetInfo 修改密码的数据包，直接修改别的user，直接成功，没有任何的校验，水平</p>
+<p>修改admin，垂直越权</p>
+<p>删除掉cookie后依然能复用修改密码的数据包，未授权</p>
+<p>插件 ： 比较修改数据包的数据包长度判断</p>
+<p>sso和手工录入</p>
+<p>被动探针</p>
+<p>js finder不适用于webpacker</p>
+<p>mobsf 证书</p>
+<h2 id="第73天：支付逻辑篇-篡改属性值-并发签约-越权盗用-算法溢出-替换对冲"><a href="#第73天：支付逻辑篇-篡改属性值-并发签约-越权盗用-算法溢出-替换对冲" class="headerlink" title="第73天：支付逻辑篇&amp;篡改属性值&amp;并发签约&amp;越权盗用&amp;算法溢出&amp;替换对冲"></a>第73天：支付逻辑篇&amp;篡改属性值&amp;并发签约&amp;越权盗用&amp;算法溢出&amp;替换对冲</h2><p> 收获不大，很好理解，感觉学习效率不如直接看优质的公众号文章</p>
+<p>商品ID、购买价格、数量、订单属性、折扣、支付方式、状态</p>
+<p>无限试用、越权支付、并发兑换</p>
+<p>感觉这一段有些无聊，可能容易想到但又没实际挖到过+站点不真实，还是感觉很离谱，不过之前也看到过支付相关的src挖掘文章</p>
+<p>接口泄漏他人的openid，积分兑换时，替换openid；<a target="_blank" rel="noopener" href="https://forum.butian.net/share/1125">奇安信攻防社区-一次信息泄露到越权支付的实战</a></p>
+<p>我想到以前赛尔号好像也是这样，自己电脑直接换日历然后就可以提前获得精灵</p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/350865.html#:~:text=%E5%AF%BC%E8%87%B4%E6%94%AF%E4%BB%98%E6%88%90%E5%8A%9F%EF%BC%9B-,5.8%E3%80%81%E5%9B%9B%E8%88%8D%E4%BA%94%E5%85%A5%E5%AF%BC%E8%87%B4%E6%94%AF%E4%BB%98%E6%BC%8F%E6%B4%9E,-%E6%88%91%E4%BB%AC%E4%BB%A5%E5%85%85">Web安全之逻辑漏洞全方位总结 -四舍五入导致支付漏洞</a> </p>
+<p>建立优惠券订单保存数据包，关闭后返回优惠券，第二次建立优惠券订单付款，再利用之前数据包的优惠券</p>
+<p>简单好理解，不需要太多漏洞知识，感觉像听故事一样，确实，网上的手段参差不齐</p>
+<h2 id="第74天：机制验证篇-重定向发送-响应状态码-跳过步骤-验证码回传-枚举"><a href="#第74天：机制验证篇-重定向发送-响应状态码-跳过步骤-验证码回传-枚举" class="headerlink" title="第74天：机制验证篇&amp;重定向发送&amp;响应状态码&amp;跳过步骤&amp;验证码回传&amp;枚举"></a>第74天：机制验证篇&amp;重定向发送&amp;响应状态码&amp;跳过步骤&amp;验证码回传&amp;枚举</h2><p>验证码：回传显示，数据包中直接有验证码</p>
+<p>规律爆破 测src其实也不用改，报告写就行，真测100就差不多了</p>
+<p>验证逻辑篇：修改响应包、跳过步骤URL</p>
+<p>确实，CMS真多 eyoucms</p>
+<p>抓包：修改密码，邮箱+验证码 点击下一步时抓包，修改为其他邮箱</p>
+<p>修改密码重定向用户：用户修改密码本来该把修改密码的链接发给用户的邮箱，但可以把邮箱的地址改为你的VPS curl&#x2F;nc的端口上，进而收到用户的修改密码链接。</p>
+<p>好家伙，还真有直接替换响应包「将响应包的code:200之类的json数据替换」成功的，福利期货这app绝了</p>
+<p>这个思路有意思，一开始还没理解，通过修改密码的响应数据包中0或1判断是否注册用户，之后遍历出一批注册的真实用户名 <a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?search_click_id=6529607654576304910-1753297461755-3653005753&__biz=Mzg5ODkwMzA0MA==&mid=2247484137&idx=1&sn=0518a9c8252b6795f12d215638914b9f&chksm=c05a3f86f72db6903ffa68382042a467d82828e607a2a38bf0d3ef715ad34c7a1be9d480b407&scene=7#rd"># 实战|记一次SRC挖掘中任意密码重置的利用 微信公众平台</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.secpulse.com/archives/200144.html">实战|记一次简单的src挖掘 - SecPulse.COM | 安全脉搏</a> appinfoscan收集app的接口信息</p>
+<p>换绑修改手机号例子：以后学完了，挖了web的垌，看看app的「最后的例子，感觉app好测」</p>
+<h2 id="第75天：验证码安全篇-接口滥用-识别插件-复用绕过-宏命令填入-滑块类"><a href="#第75天：验证码安全篇-接口滥用-识别插件-复用绕过-宏命令填入-滑块类" class="headerlink" title="第75天：验证码安全篇&amp;接口滥用&amp;识别插件&amp;复用绕过&amp;宏命令填入&amp;滑块类"></a>第75天：验证码安全篇&amp;接口滥用&amp;识别插件&amp;复用绕过&amp;宏命令填入&amp;滑块类</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_60571842/article/details/135572833">业务逻辑攻防-验证码安全篇&amp;接口滥用&amp;识别插件&amp;复用绕过&amp;宏命令填入&amp;滑块类_验证码复用-CSDN博客</a> 收费的验证码识别</p>
+<p>滑块验证码</p>
+<blockquote>
+<p>感觉这一块可以听快点，具体的漏洞原理和复现认真听</p>
+</blockquote>
+<p>口令爆破、接口枚举调用、</p>
+<p>NEW_xp_CAPTCHA</p>
+<p>新版本的burp线程数小迪弄不好，一直和验证码识别工具xiapao联动不好</p>
+<p>快识别收费的api的 xiapao_api</p>
+<p>设置延时时间100毫秒</p>
+<p>短信轰炸：验证码识别，抓「获取&#x2F;刷新验证码」包得到验证码图片url的路径，填入验证码识别插件，intruder爆破 获取手机短信验证码的数据包，实现识别图片验证码的短信轰炸</p>
+<p>验证码复用</p>
+<p>burp设置宏 <a target="_blank" rel="noopener" href="https://blog.csdn.net/shuryuu/article/details/104576559">burp suite 高端利用之编写宏规则绕过滑动验证码_怎么用burp绕过滑块验证-CSDN博客</a> </p>
+<p>只能应用于链接的滑块，拉到底，具体情况具体分析 这个值没有硬编码</p>
+<p><a target="_blank" rel="noopener" href="http://www.sxphc.cn/djzx/info/1121/2558.htm">盘点14类常规验证码安全漏洞及修复方式-山西药科职业学院数字信息中心</a></p>
+<h2 id="第76天：Fuzz模糊测试篇-JS算法口令-隐藏参数-盲Payload-未知文件目录"><a href="#第76天：Fuzz模糊测试篇-JS算法口令-隐藏参数-盲Payload-未知文件目录" class="headerlink" title="第76天：Fuzz模糊测试篇&amp;JS算法口令&amp;隐藏参数&amp;盲Payload&amp;未知文件目录"></a>第76天：Fuzz模糊测试篇&amp;JS算法口令&amp;隐藏参数&amp;盲Payload&amp;未知文件目录</h2><p>Fuzz：大量批量测试，黑盒</p>
+<p>fuzzdict-master</p>
+<p>前十几分钟的密码爆破，这都70多天了，还有什么好讲的</p>
+<p>js打断点，之前听过，现在还是不怎么会</p>
+<p>直接通过console的控制台打印加密编码后的密码，应该和burp联动</p>
+<p>没太明白手动操作，js文件引出，jsencrypt对象</p>
+<p>js engine ： 选择HtmlUnit</p>
+<p>不只是目录探测，还有文件名 参数名「RCE」</p>
+<p>好家伙，真有内鬼，听课听着把vul复现站点删了，确实过分了</p>
+<p>但是只能用于php的了 java&#x2F;python都是路由映射 </p>
+<blockquote>
+<p>之前一直搞不懂路由映射，真的是越来越安全了</p>
+</blockquote>
+<p>rm -r .&#x2F;* 确实太🐶了，当时看这一段和弹幕直接笑出声</p>
+<h2 id="第77天：业务设计篇-隐私合规检测-URL重定向-资源拒绝服务-配合项目"><a href="#第77天：业务设计篇-隐私合规检测-URL重定向-资源拒绝服务-配合项目" class="headerlink" title="第77天：业务设计篇&amp;隐私合规检测&amp;URL重定向&amp;资源拒绝服务&amp;配合项目"></a>第77天：业务设计篇&amp;隐私合规检测&amp;URL重定向&amp;资源拒绝服务&amp;配合项目</h2><p>隐私合规竟然也能挖洞</p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/ffx1/p/17523532.html">App隐私合规学习wiki - 重生之我在人间学安全 - 博客园</a> 整理了一些文档 法律、平台、权限、指南、案例</p>
+<p>mobsf</p>
+<p>appscan.ly <a target="_blank" rel="noopener" href="https://appscan.ly.com/">AppScan文档</a> 动态 需要真机 手机ROOT ADB模式</p>
+<p>appshark <a target="_blank" rel="noopener" href="https://github.com/bytedance/appshark">bytedance&#x2F;appshark: Appshark is a static taint analysis platform to scan vulnerabilities in an Android app.</a> 静态分析</p>
+<p>url重定向 检测 钓鱼 国外更容易收 Adomain.com&#x2F;?url&#x3D;Bfish.com</p>
+<p>登录认证跳转 </p>
+<p>url重定向 后面直接改为url编码 或base64编码 url绕过 添加字符：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/NoId/p/16631462.html">URL重定向及绕过方法 - NoId1 - 博客园</a></p>
+<p>反向代理</p>
+<p>TelePort 爬虫 制作钓鱼网站 直接在上面写获取username和password 之后保存在txt中，收集登录信息</p>
+<p>看大佬改代码行云流水，像是魔术玩牌🃏一样，最后是form的位置不对，</p>
+<p>资源拒绝服务 </p>
+<p>网站有解压缩的功能，压缩包炸弹 确实要小心，</p>
+<p>54天 JWT, CRLE,CORS，重定向，JSONP 回调，域名接管，DDOS，接口枚举等 这些特殊漏洞上一期有讲，特殊，出现少</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC72%E5%A4%A9%EF%BC%9A%E4%B8%9A%E5%8A%A1%E9%80%BB%E8%BE%91%E7%AF%87-%E6%B0%B4%E5%B9%B3%E8%B6%8A%E6%9D%83-%E5%9E%82%E7%9B%B4%E8%B6%8A%E6%9D%83-%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE-%E6%A3%80%E6%B5%8B%E6%8F%92%E4%BB%B6-SRC%E9%A1%B9%E7%9B%AE"><span class="toc-number">1.</span> <span class="toc-text">第72天：业务逻辑篇&amp;水平越权&amp;垂直越权&amp;未授权访问&amp;检测插件&amp;SRC项目</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC73%E5%A4%A9%EF%BC%9A%E6%94%AF%E4%BB%98%E9%80%BB%E8%BE%91%E7%AF%87-%E7%AF%A1%E6%94%B9%E5%B1%9E%E6%80%A7%E5%80%BC-%E5%B9%B6%E5%8F%91%E7%AD%BE%E7%BA%A6-%E8%B6%8A%E6%9D%83%E7%9B%97%E7%94%A8-%E7%AE%97%E6%B3%95%E6%BA%A2%E5%87%BA-%E6%9B%BF%E6%8D%A2%E5%AF%B9%E5%86%B2"><span class="toc-number">2.</span> <span class="toc-text">第73天：支付逻辑篇&amp;篡改属性值&amp;并发签约&amp;越权盗用&amp;算法溢出&amp;替换对冲</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC74%E5%A4%A9%EF%BC%9A%E6%9C%BA%E5%88%B6%E9%AA%8C%E8%AF%81%E7%AF%87-%E9%87%8D%E5%AE%9A%E5%90%91%E5%8F%91%E9%80%81-%E5%93%8D%E5%BA%94%E7%8A%B6%E6%80%81%E7%A0%81-%E8%B7%B3%E8%BF%87%E6%AD%A5%E9%AA%A4-%E9%AA%8C%E8%AF%81%E7%A0%81%E5%9B%9E%E4%BC%A0-%E6%9E%9A%E4%B8%BE"><span class="toc-number">3.</span> <span class="toc-text">第74天：机制验证篇&amp;重定向发送&amp;响应状态码&amp;跳过步骤&amp;验证码回传&amp;枚举</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC75%E5%A4%A9%EF%BC%9A%E9%AA%8C%E8%AF%81%E7%A0%81%E5%AE%89%E5%85%A8%E7%AF%87-%E6%8E%A5%E5%8F%A3%E6%BB%A5%E7%94%A8-%E8%AF%86%E5%88%AB%E6%8F%92%E4%BB%B6-%E5%A4%8D%E7%94%A8%E7%BB%95%E8%BF%87-%E5%AE%8F%E5%91%BD%E4%BB%A4%E5%A1%AB%E5%85%A5-%E6%BB%91%E5%9D%97%E7%B1%BB"><span class="toc-number">4.</span> <span class="toc-text">第75天：验证码安全篇&amp;接口滥用&amp;识别插件&amp;复用绕过&amp;宏命令填入&amp;滑块类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC76%E5%A4%A9%EF%BC%9AFuzz%E6%A8%A1%E7%B3%8A%E6%B5%8B%E8%AF%95%E7%AF%87-JS%E7%AE%97%E6%B3%95%E5%8F%A3%E4%BB%A4-%E9%9A%90%E8%97%8F%E5%8F%82%E6%95%B0-%E7%9B%B2Payload-%E6%9C%AA%E7%9F%A5%E6%96%87%E4%BB%B6%E7%9B%AE%E5%BD%95"><span class="toc-number">5.</span> <span class="toc-text">第76天：Fuzz模糊测试篇&amp;JS算法口令&amp;隐藏参数&amp;盲Payload&amp;未知文件目录</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC77%E5%A4%A9%EF%BC%9A%E4%B8%9A%E5%8A%A1%E8%AE%BE%E8%AE%A1%E7%AF%87-%E9%9A%90%E7%A7%81%E5%90%88%E8%A7%84%E6%A3%80%E6%B5%8B-URL%E9%87%8D%E5%AE%9A%E5%90%91-%E8%B5%84%E6%BA%90%E6%8B%92%E7%BB%9D%E6%9C%8D%E5%8A%A1-%E9%85%8D%E5%90%88%E9%A1%B9%E7%9B%AE"><span class="toc-number">6.</span> <span class="toc-text">第77天：业务设计篇&amp;隐私合规检测&amp;URL重定向&amp;资源拒绝服务&amp;配合项目</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&text=逻辑漏洞-小迪安全"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=逻辑漏洞-小迪安全"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&is_video=false&description=逻辑漏洞-小迪安全"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=逻辑漏洞-小迪安全&body=Check out this article: http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=逻辑漏洞-小迪安全"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=逻辑漏洞-小迪安全"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=逻辑漏洞-小迪安全"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=逻辑漏洞-小迪安全"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&name=逻辑漏洞-小迪安全&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&t=逻辑漏洞-小迪安全"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2025
+    John Doe
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

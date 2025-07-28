@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="数据库注入【Web攻防】第41天：ASP应用&amp;HTTP.SYS&amp;短文件&amp;文件解析&amp;Access注入&amp;数据库泄漏Asp应用的Access数据库不需连接，而是直接在脚本文件定义好数据库路径即可 database&#x2F;%23data.mdb %23即为# 默认的数据库路径 确实有点无聊了，实验的网站也非常老 他是默认路径访问直接可以下载数据库，但是别的语言都">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Web攻防基础-小迪安全">
+<meta property="og:url" content="http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="数据库注入【Web攻防】第41天：ASP应用&amp;HTTP.SYS&amp;短文件&amp;文件解析&amp;Access注入&amp;数据库泄漏Asp应用的Access数据库不需连接，而是直接在脚本文件定义好数据库路径即可 database&#x2F;%23data.mdb %23即为# 默认的数据库路径 确实有点无聊了，实验的网站也非常老 他是默认路径访问直接可以下载数据库，但是别的语言都">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2025-07-23T15:25:06.000Z">
+<meta property="article:modified_time" content="2025-07-28T21:09:38.161Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Web攻防基础-小迪安全</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2025/07/26/%E6%BC%8F%E6%B4%9E%E6%89%AB%E6%8F%8F%E7%AF%87/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&text=Web攻防基础-小迪安全"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=Web攻防基础-小迪安全"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&is_video=false&description=Web攻防基础-小迪安全"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Web攻防基础-小迪安全&body=Check out this article: http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=Web攻防基础-小迪安全"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=Web攻防基础-小迪安全"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=Web攻防基础-小迪安全"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=Web攻防基础-小迪安全"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&name=Web攻防基础-小迪安全&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&t=Web攻防基础-小迪安全"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E6%B3%A8%E5%85%A5"><span class="toc-number">1.</span> <span class="toc-text">数据库注入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E3%80%90Web%E6%94%BB%E9%98%B2%E3%80%91%E7%AC%AC41%E5%A4%A9%EF%BC%9AASP%E5%BA%94%E7%94%A8-HTTP-SYS-%E7%9F%AD%E6%96%87%E4%BB%B6-%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90-Access%E6%B3%A8%E5%85%A5-%E6%95%B0%E6%8D%AE%E5%BA%93%E6%B3%84%E6%BC%8F"><span class="toc-number">1.1.</span> <span class="toc-text">【Web攻防】第41天：ASP应用&amp;HTTP.SYS&amp;短文件&amp;文件解析&amp;Access注入&amp;数据库泄漏</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC42%E5%A4%A9%EF%BC%9APHP%E5%BA%94%E7%94%A8-MYSQL%E6%9E%B6%E6%9E%84-SQL%E6%B3%A8%E5%85%A5-%E8%B7%A8%E5%BA%93%E6%9F%A5%E8%AF%A2-%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99-%E6%9D%83%E9%99%90%E6%93%8D%E4%BD%9C"><span class="toc-number">1.2.</span> <span class="toc-text">第42天：PHP应用&amp;MYSQL架构&amp;SQL注入&amp;跨库查询&amp;文件读写&amp;权限操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC43%E5%A4%A9%EF%BC%9APHP%E5%BA%94%E7%94%A8-SQL%E6%B3%A8%E5%85%A5-%E7%AC%A6%E5%8F%B7%E6%8B%BC%E6%8E%A5-%E8%AF%B7%E6%B1%82%E6%96%B9%E6%B3%95-HTTP%E5%A4%B4-JSON-%E7%BC%96%E7%A0%81%E7%B1%BB"><span class="toc-number">1.3.</span> <span class="toc-text">第43天：PHP应用&amp;SQL注入&amp;符号拼接&amp;请求方法&amp;HTTP头&amp;JSON&amp;编码类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC44%E5%A4%A9%EF%BC%9APHP%E5%BA%94%E7%94%A8-SQL%E7%9B%B2%E6%B3%A8-%E5%B8%83%E5%B0%94%E5%9B%9E%E6%98%BE-%E5%BB%B6%E6%97%B6%E5%88%A4%E6%96%AD-%E6%8A%A5%E9%94%99%E5%A4%84%E7%90%86-%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5%E6%96%B9%E5%BC%8F"><span class="toc-number">1.4.</span> <span class="toc-text">第44天：PHP应用&amp;SQL盲注&amp;布尔回显&amp;延时判断&amp;报错处理&amp;增删改查方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC45%E5%A4%A9%EF%BC%9APHP%E5%BA%94%E7%94%A8-SQL%E4%BA%8C%E6%AC%A1%E6%B3%A8%E5%85%A5-%E5%A0%86%E5%8F%A0%E6%89%A7%E8%A1%8C-DNS%E5%B8%A6%E5%A4%96-%E5%8A%9F%E8%83%BD%E7%82%B9-%E9%BB%91%E7%99%BD%E7%9B%92%E6%9D%A1%E4%BB%B6"><span class="toc-number">1.5.</span> <span class="toc-text">第45天：PHP应用&amp;SQL二次注入&amp;堆叠执行&amp;DNS带外&amp;功能点&amp;黑白盒条件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC46%E5%A4%A9%EF%BC%9A%E6%B3%A8%E5%85%A5%E5%B7%A5%E5%85%B7-SQLMAP-Tamper%E7%BC%96%E5%86%99-%E6%8C%87%E7%BA%B9%E4%BF%AE%E6%94%B9-%E9%AB%98%E6%9D%83%E9%99%90%E6%93%8D%E4%BD%9C-%E7%9B%AE%E5%BD%95%E6%9E%B6%E6%9E%84"><span class="toc-number">1.6.</span> <span class="toc-text">第46天：注入工具&amp;SQLMAP&amp;Tamper编写&amp;指纹修改&amp;高权限操作&amp;目录架构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0"><span class="toc-number">2.</span> <span class="toc-text">文件上传</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC47%E5%A4%A9%EF%BC%9APHP%E5%BA%94%E7%94%A8-%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0-%E5%87%BD%E6%95%B0%E7%BC%BA%E9%99%B7-%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89-%E4%BA%8C%E6%AC%A1%E6%B8%B2%E6%9F%93-%E9%BB%91%E7%99%BD%E5%90%8D%E5%8D%95-JS%E7%BB%95%E8%BF%87"><span class="toc-number">2.1.</span> <span class="toc-text">第47天：PHP应用&amp;文件上传&amp;函数缺陷&amp;条件竞争&amp;二次渲染&amp;黑白名单&amp;JS绕过</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC48%E5%A4%A9%EF%BC%9APHP%E5%BA%94%E7%94%A8-%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0-%E4%B8%AD%E9%97%B4%E4%BB%B6CVE%E8%A7%A3%E6%9E%90-%E7%AC%AC%E4%B8%89%E6%96%B9%E7%BC%96%E8%BE%91%E5%99%A8-%E5%B7%B2%E7%9F%A5CMS%E6%BC%8F%E6%B4%9E"><span class="toc-number">2.2.</span> <span class="toc-text">第48天：PHP应用&amp;文件上传&amp;中间件CVE解析&amp;第三方编辑器&amp;已知CMS漏洞</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC49%E5%A4%A9%EF%BC%9A%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0-%E5%AD%98%E5%82%A8%E5%AE%89%E5%85%A8-OSS%E5%AF%B9%E8%B1%A1-%E5%88%86%E7%AB%99-%E8%A7%A3%E6%9E%90%E5%AE%89%E5%85%A8-%E8%A7%A3%E7%A0%81%E8%BF%98%E5%8E%9F-%E7%9B%AE%E5%BD%95%E6%89%A7%E8%A1%8C"><span class="toc-number">2.3.</span> <span class="toc-text">第49天：文件上传&amp;存储安全&amp;OSS对象&amp;分站&amp;解析安全&amp;解码还原&amp;目录执行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC50%E5%A4%A9%EF%BC%9APHP%E5%BA%94%E7%94%A8-%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB-LFI-RFI-%E4%BC%AA%E5%8D%8F%E8%AE%AE%E7%BC%96%E7%A0%81%E7%AE%97%E6%B3%95-%E6%97%A0%E6%96%87%E4%BB%B6%E5%88%A9%E7%94%A8-%E9%BB%91%E7%99%BD%E7%9B%92"><span class="toc-number">2.4.</span> <span class="toc-text">第50天：PHP应用&amp;文件包含&amp;LFI&amp;RFI&amp;伪协议编码算法&amp;无文件利用&amp;黑白盒</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC51%E5%A4%A9%EF%BC%9A%E5%89%8D%E5%90%8E%E5%8F%B0%E5%8A%9F%E8%83%BD%E7%82%B9-%E6%96%87%E4%BB%B6%E4%B8%8B%E8%BD%BD-%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96-%E6%96%87%E4%BB%B6%E5%88%A0%E9%99%A4-%E7%9B%AE%E5%BD%95%E9%81%8D%E5%8E%86-%E7%9B%AE%E5%BD%95%E7%A9%BF%E8%B6%8A"><span class="toc-number">2.5.</span> <span class="toc-text">第51天：前后台功能点&amp;文件下载&amp;文件读取&amp;文件删除&amp;目录遍历&amp;目录穿越</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XSS%E8%B7%A8%E7%AB%99%E8%84%9A%E6%9C%AC"><span class="toc-number">3.</span> <span class="toc-text">XSS跨站脚本</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC52%E5%A4%A9%EF%BC%9AXSS%E8%B7%A8%E7%AB%99-%E5%8F%8D%E5%B0%84%E5%9E%8B-%E5%AD%98%E5%82%A8%E5%9E%8B-DOM%E5%9E%8B-%E6%A0%87%E7%AD%BE%E9%97%AD%E5%90%88-%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA-JS%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90"><span class="toc-number">3.1.</span> <span class="toc-text">第52天：XSS跨站&amp;反射型&amp;存储型&amp;DOM型&amp;标签闭合&amp;输入输出&amp;JS代码解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC53%E5%A4%A9%EF%BC%9AXSS%E8%B7%A8%E7%AB%99-SVG-PDF-Flash-MXSS-UXSS-%E9%85%8D%E5%90%88%E4%B8%8A%E4%BC%A0-%E6%96%87%E4%BB%B6%E6%B7%BB%E5%8A%A0%E8%84%9A%E6%9C%AC"><span class="toc-number">3.2.</span> <span class="toc-text">第53天：XSS跨站&amp;SVG&amp;PDF&amp;Flash&amp;MXSS&amp;UXSS&amp;配合上传&amp;文件添加脚本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC54%E5%A4%A9%EF%BC%9AXSS%E8%B7%A8%E7%AB%99-Cookie%E7%9B%97%E5%8F%96-%E8%A1%A8%E5%8D%95%E5%8A%AB%E6%8C%81-%E7%BD%91%E7%BB%9C%E9%92%93%E9%B1%BC-%E6%BA%AF%E6%BA%90%E5%88%86%E6%9E%90-%E9%A1%B9%E7%9B%AE%E5%B9%B3%E5%8F%B0%E6%A1%86%E6%9E%B6"><span class="toc-number">3.3.</span> <span class="toc-text">第54天：XSS跨站&amp;Cookie盗取&amp;表单劫持&amp;网络钓鱼&amp;溯源分析&amp;项目平台框架</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC55%E5%A4%A9%EF%BC%9AXSS%E8%B7%A8%E7%AB%99-CSP%E7%AD%96%E7%95%A5-HttpOnly%E5%B1%9E%E6%80%A7-Filter%E8%BF%87%E6%BB%A4%E5%99%A8-%E6%A0%87%E7%AD%BE%E9%97%AD%E5%90%88-%E4%BA%8B%E4%BB%B6%E8%A7%A6%E5%8F%91"><span class="toc-number">3.4.</span> <span class="toc-text">第55天：XSS跨站&amp;CSP策略&amp;HttpOnly属性&amp;Filter过滤器&amp;标签闭合&amp;事件触发</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Web攻防基础-小迪安全
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">John Doe</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-07-23T15:25:06.000Z" class="dt-published" itemprop="datePublished">2025-07-23</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="数据库注入"><a href="#数据库注入" class="headerlink" title="数据库注入"></a>数据库注入</h2><h3 id="【Web攻防】第41天：ASP应用-HTTP-SYS-短文件-文件解析-Access注入-数据库泄漏"><a href="#【Web攻防】第41天：ASP应用-HTTP-SYS-短文件-文件解析-Access注入-数据库泄漏" class="headerlink" title="【Web攻防】第41天：ASP应用&amp;HTTP.SYS&amp;短文件&amp;文件解析&amp;Access注入&amp;数据库泄漏"></a>【Web攻防】第41天：ASP应用&amp;HTTP.SYS&amp;短文件&amp;文件解析&amp;Access注入&amp;数据库泄漏</h3><p>Asp应用的Access数据库不需连接，而是直接在脚本文件定义好数据库路径即可</p>
+<p>database&#x2F;%23data.mdb %23即为# 默认的数据库路径</p>
+<p>确实有点无聊了，实验的网站也非常老</p>
+<p>他是默认路径访问直接可以下载数据库，但是别的语言都要有账号密码才能访问，所以不存在啊</p>
+<p>IIS短文件名探测</p>
+<p>IIS6解析漏洞 6版本没有补丁.asp;.jpg 加上分号；文件夹的名字改为1.asp</p>
+<p>IIS写权限漏洞 web服务拓展加入写权限 利用postman post 1.txt测试直接写入文件（这是小迪老师学安全的时候的东西）</p>
+<p>SQL注入即为数据库注入，与数据库类型有关，与开发语言无关</p>
+<p>容错页面，代码逻辑设置，导致的404页面，而不一定是SQL注入</p>
+<p>听不懂也没关系，以后也用不到了啊</p>
+<p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/2107200">HTTP.sys远程执行代码漏洞验证及复现——CVE-2015-1635、MS15-034[通俗易懂]-腾讯云开发者社区-腾讯云</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/172561.html">IIS深入浅出之短文件漏洞知多少 - FreeBuf网络安全行业门户</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/vuls/265279.html">IIS6.0解析漏洞复现 - FreeBuf网络安全行业门户</a></p>
+<h3 id="第42天：PHP应用-MYSQL架构-SQL注入-跨库查询-文件读写-权限操作"><a href="#第42天：PHP应用-MYSQL架构-SQL注入-跨库查询-文件读写-权限操作" class="headerlink" title="第42天：PHP应用&amp;MYSQL架构&amp;SQL注入&amp;跨库查询&amp;文件读写&amp;权限操作"></a>第42天：PHP应用&amp;MYSQL架构&amp;SQL注入&amp;跨库查询&amp;文件读写&amp;权限操作</h3><p>1</p>
+<p>java的数据库用oracle讲解</p>
+<p>数据库一对一管理 不用用户，每个网站单独建立数据库管理</p>
+<p>确实，面向0基础，中间介绍information_schema跳过了</p>
+<p>跨库注入</p>
+<p>sql注入基本没有，小站挖着也没啥价值了 纯当练手了。</p>
+<p>load_file 路径 win \\或&#x2F;</p>
+<p>读文件 load_file</p>
+<p>unino select写文件需要root，对数字、字符型有要求吗</p>
+<p>google镜像</p>
+<p>确实，现在没有用武之地，还讲那么细干嘛呀</p>
+<p>sqlserver没有写文件 </p>
+<h3 id="第43天：PHP应用-SQL注入-符号拼接-请求方法-HTTP头-JSON-编码类"><a href="#第43天：PHP应用-SQL注入-符号拼接-请求方法-HTTP头-JSON-编码类" class="headerlink" title="第43天：PHP应用&amp;SQL注入&amp;符号拼接&amp;请求方法&amp;HTTP头&amp;JSON&amp;编码类"></a>第43天：PHP应用&amp;SQL注入&amp;符号拼接&amp;请求方法&amp;HTTP头&amp;JSON&amp;编码类</h3><h3 id="第44天：PHP应用-SQL盲注-布尔回显-延时判断-报错处理-增删改查方式"><a href="#第44天：PHP应用-SQL盲注-布尔回显-延时判断-报错处理-增删改查方式" class="headerlink" title="第44天：PHP应用&amp;SQL盲注&amp;布尔回显&amp;延时判断&amp;报错处理&amp;增删改查方式"></a>第44天：PHP应用&amp;SQL盲注&amp;布尔回显&amp;延时判断&amp;报错处理&amp;增删改查方式</h3><h3 id="第45天：PHP应用-SQL二次注入-堆叠执行-DNS带外-功能点-黑白盒条件"><a href="#第45天：PHP应用-SQL二次注入-堆叠执行-DNS带外-功能点-黑白盒条件" class="headerlink" title="第45天：PHP应用&amp;SQL二次注入&amp;堆叠执行&amp;DNS带外&amp;功能点&amp;黑白盒条件"></a>第45天：PHP应用&amp;SQL二次注入&amp;堆叠执行&amp;DNS带外&amp;功能点&amp;黑白盒条件</h3><h3 id="第46天：注入工具-SQLMAP-Tamper编写-指纹修改-高权限操作-目录架构"><a href="#第46天：注入工具-SQLMAP-Tamper编写-指纹修改-高权限操作-目录架构" class="headerlink" title="第46天：注入工具&amp;SQLMAP&amp;Tamper编写&amp;指纹修改&amp;高权限操作&amp;目录架构"></a>第46天：注入工具&amp;SQLMAP&amp;Tamper编写&amp;指纹修改&amp;高权限操作&amp;目录架构</h3><h2 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h2><h3 id="第47天：PHP应用-文件上传-函数缺陷-条件竞争-二次渲染-黑白名单-JS绕过"><a href="#第47天：PHP应用-文件上传-函数缺陷-条件竞争-二次渲染-黑白名单-JS绕过" class="headerlink" title="第47天：PHP应用&amp;文件上传&amp;函数缺陷&amp;条件竞争&amp;二次渲染&amp;黑白名单&amp;JS绕过"></a>第47天：PHP应用&amp;文件上传&amp;函数缺陷&amp;条件竞争&amp;二次渲染&amp;黑白名单&amp;JS绕过</h3><p>「整体简单，数组绕过、函数缺陷不了解；这几篇看完后了解常见面试题即可，如XX情况，应选择哪种绕过方式，和XX绕过的条件」</p>
+<p>f8x ：<a target="_blank" rel="noopener" href="https://github.com/ffffffff0x/f8x">ffffffff0x&#x2F;f8x: 红&#x2F;蓝队环境自动化部署工具 | Red&#x2F;Blue team environment automation deployment tool</a> 小迪用这个搭建的文件上传靶场</p>
+<p>前后端检测、黑白名单、文件头</p>
+<p>文件二次渲染</p>
+<p>先上传后判断-条件竞争</p>
+<p>解析：.htaccess</p>
+<p>函数缺陷move_uploaded_file 保存文件名 绕过：shell.php&#x2F;.</p>
+<p>代码审计-数组绕过</p>
+<p>这些基础的漏洞都越来越少了</p>
+<h3 id="第48天：PHP应用-文件上传-中间件CVE解析-第三方编辑器-已知CMS漏洞"><a href="#第48天：PHP应用-文件上传-中间件CVE解析-第三方编辑器-已知CMS漏洞" class="headerlink" title="第48天：PHP应用&amp;文件上传&amp;中间件CVE解析&amp;第三方编辑器&amp;已知CMS漏洞"></a>第48天：PHP应用&amp;文件上传&amp;中间件CVE解析&amp;第三方编辑器&amp;已知CMS漏洞</h3><p>「地铁看的，vulhub很好用，唉，小迪老师也不看好这些基础漏洞的应用，不用深入研究细节，了解其思想即可；反之，如果以后要深入搞Java的代码审计，那么相关的基础要打牢」</p>
+<h3 id="第49天：文件上传-存储安全-OSS对象-分站-解析安全-解码还原-目录执行"><a href="#第49天：文件上传-存储安全-OSS对象-分站-解析安全-解码还原-目录执行" class="headerlink" title="第49天：文件上传&amp;存储安全&amp;OSS对象&amp;分站&amp;解析安全&amp;解码还原&amp;目录执行"></a>第49天：文件上传&amp;存储安全&amp;OSS对象&amp;分站&amp;解析安全&amp;解码还原&amp;目录执行</h3><p>「讲的比较简单，目录执行权限，base64编码、分站存储、OSS对象」</p>
+<p>OSS、bucket 标准存储 一访问就下载</p>
+<p>accesskeyid 用户信息管理 AKSK</p>
+<p>403 php没有办法正常执行</p>
+<p>分站存储</p>
+<p>base64图片编码，放弃</p>
+<p>文件上传存储目录不给权限</p>
+<p>随着时间发展，攻击面越来越少 ，只会越来越安全了</p>
+<p>对象存储SDK</p>
+<p>应用功能追踪代码定位审计</p>
+<p>脚本特定函数搜索定位审计</p>
+<p>伪协议绕过</p>
+<h3 id="第50天：PHP应用-文件包含-LFI-RFI-伪协议编码算法-无文件利用-黑白盒"><a href="#第50天：PHP应用-文件包含-LFI-RFI-伪协议编码算法-无文件利用-黑白盒" class="headerlink" title="第50天：PHP应用&amp;文件包含&amp;LFI&amp;RFI&amp;伪协议编码算法&amp;无文件利用&amp;黑白盒"></a>第50天：PHP应用&amp;文件包含&amp;LFI&amp;RFI&amp;伪协议编码算法&amp;无文件利用&amp;黑白盒</h3><p>黑盒，常见参数：path、dir、file、page、archive、p、eng</p>
+<p>有文件利用：上传的恶意文件</p>
+<p>无文件利用：日志、session、伪协议</p>
+<p>php input 远程文件需要open模式，data协议本地和远程文件均需要open模式</p>
+<p>filter base64写入shell还需要file_put_contents</p>
+<p>文件读取、写入、代码执行</p>
+<p>php session upload progress</p>
+<p>82 session条件竞争，不理解为什么有些不能直接浏览器访问，必须构造HTTP文件访问；抓包：生成session和访问session进而触发生成shell。</p>
+<p>87关：两次urlencode；因为只是通过解码一次后的结果进行过滤；前面加上两位的占位符；或采用rot13加密</p>
+<p>88关：base64后编码后不能包含被过滤的字符</p>
+<h3 id="第51天：前后台功能点-文件下载-文件读取-文件删除-目录遍历-目录穿越"><a href="#第51天：前后台功能点-文件下载-文件读取-文件删除-目录遍历-目录穿越" class="headerlink" title="第51天：前后台功能点&amp;文件下载&amp;文件读取&amp;文件删除&amp;目录遍历&amp;目录穿越"></a>第51天：前后台功能点&amp;文件下载&amp;文件读取&amp;文件删除&amp;目录遍历&amp;目录穿越</h3><p>url路径直接下载，如果是PHP，会按照PHP解析；另一种是file参数传递路径，直接读取源码或敏感信息「感觉文件下载简单，应该放在文件包含前讲啊」</p>
+<p>文件删除 不好测试+一般在后台或删除自己文件 </p>
+<p>演示：seacms，install重装，提示需要删除XX文件；templets&#x2F;..&#x2F;install_lock.txt</p>
+<p>目录遍历、目录穿越</p>
+<p>开发要学到哪种程度，能独立开发项目还是能看懂代码（不需要能独立开发，水平很高了）</p>
+<h2 id="XSS跨站脚本"><a href="#XSS跨站脚本" class="headerlink" title="XSS跨站脚本"></a>XSS跨站脚本</h2><blockquote>
+<p>自己对于后面几节的高级XSS利用方式还真是不会啊</p>
+</blockquote>
+<h3 id="第52天：XSS跨站-反射型-存储型-DOM型-标签闭合-输入输出-JS代码解析"><a href="#第52天：XSS跨站-反射型-存储型-DOM型-标签闭合-输入输出-JS代码解析" class="headerlink" title="第52天：XSS跨站&amp;反射型&amp;存储型&amp;DOM型&amp;标签闭合&amp;输入输出&amp;JS代码解析"></a>第52天：XSS跨站&amp;反射型&amp;存储型&amp;DOM型&amp;标签闭合&amp;输入输出&amp;JS代码解析</h3><p>接受输入数据（js代码），输出显示数据后台解析执行 ifream src嵌套第三方网站</p>
+<p>反射</p>
+<p>存储</p>
+<p>DOM 演示：锚点#实现跳转第三方站</p>
+<p>交互式</p>
+<p><code>&lt;img src=$x&gt; 标签 x onerror=&quot;alert(1)&quot;</code></p>
+<p>小皮面板XSS</p>
+<p>标签和过滤方式决定</p>
+<h3 id="第53天：XSS跨站-SVG-PDF-Flash-MXSS-UXSS-配合上传-文件添加脚本"><a href="#第53天：XSS跨站-SVG-PDF-Flash-MXSS-UXSS-配合上传-文件添加脚本" class="headerlink" title="第53天：XSS跨站&amp;SVG&amp;PDF&amp;Flash&amp;MXSS&amp;UXSS&amp;配合上传&amp;文件添加脚本"></a>第53天：XSS跨站&amp;SVG&amp;PDF&amp;Flash&amp;MXSS&amp;UXSS&amp;配合上传&amp;文件添加脚本</h3><p>用SVG、PDF 配合文件上传或直链制作，进而钓鱼触发XSS</p>
+<p>Flash插入js代码，反编译</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/AntSwordProject/ant">AntSwordProject&#x2F;ant: 实时上线的 XSS 盲打平台</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/78778443/xssplatform">78778443&#x2F;xssplatform: 一个经典的XSS渗透管理平台</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Ascotbe/Medusa">Ascotbe&#x2F;Medusa: :cat2:Medusa是一个红队武器库平台，目前包括XSS平台、协同平台、CVE监控、免杀生成、DNSLOG、钓鱼邮件、文件获取等功能，持续开发中</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/rmb122/xss-receiver">rmb122&#x2F;xss-receiver: 简单易用的 xss 接收平台 + payload 管理平台</a></p>
+<p>mXSS 突变性 本来转义 现在没法演示之前的</p>
+<p>UXSS 比如edge特定版本浏览器翻译时触发XSS</p>
+<p>盲打：黑盒完全测试</p>
+<p>cookie窃取：对session、jwt没用</p>
+<p>小皮面板登录框插入XSS窃取cookie到XSS平台后，利用登录的管理员的PHPSession cookie不成功，或又跳转到登录页面，即使postman发包也没实现 js文件中 access_token的鉴权</p>
+<h3 id="第54天：XSS跨站-Cookie盗取-表单劫持-网络钓鱼-溯源分析-项目平台框架"><a href="#第54天：XSS跨站-Cookie盗取-表单劫持-网络钓鱼-溯源分析-项目平台框架" class="headerlink" title="第54天：XSS跨站&amp;Cookie盗取&amp;表单劫持&amp;网络钓鱼&amp;溯源分析&amp;项目平台框架"></a>第54天：XSS跨站&amp;Cookie盗取&amp;表单劫持&amp;网络钓鱼&amp;溯源分析&amp;项目平台框架</h3><p>小皮面板由于cookie窃取后登录不成功，改进：恶意js代码放到VPS上，js：通过定时任务写入shell到网站目录下</p>
+<p>据说是被内鬼添加了网站防火墙 CC规则，uri&#x3D;all</p>
+<p>之后搭建了一个贷款平台的客户端和管理端（需要低版本的PHPstudy），用户在提现的输入框插入XSS平台语句，管理员审查时，触发XSS泄漏cookie，进而被攻击者利用实现登录</p>
+<p>这个钓鱼的真的有意思，操作后，js弹窗提示，直接提到钓鱼网站，之后诱导下载捆绑后门的软件 可见于22年152天-154天的钓鱼课程</p>
+<p>XSS数据平台：XSS- Receiver</p>
+<p>浏览器控制框架beef-xss，执行XSS，实现对当前浏览器的控制；看到beef的各类操作：0click跳转到第三方站，甚至有获取摄像头，像是第一次看到CS工具一样兴奋🥰；不过还是现在法律严格，没有那么多为了炫技搞得，所以这种涉及到用户交互或欺骗类的，奖励没纯安全漏洞高，比如src不收之类的，但有心利用「组合技」还是危害很大的</p>
+<blockquote>
+<p>怪不得，之前看blog，讲「余弦」之前就主攻过一段时间的XSS，确实很有吸引力</p>
+</blockquote>
+<h3 id="第55天：XSS跨站-CSP策略-HttpOnly属性-Filter过滤器-标签闭合-事件触发"><a href="#第55天：XSS跨站-CSP策略-HttpOnly属性-Filter过滤器-标签闭合-事件触发" class="headerlink" title="第55天：XSS跨站&amp;CSP策略&amp;HttpOnly属性&amp;Filter过滤器&amp;标签闭合&amp;事件触发"></a>第55天：XSS跨站&amp;CSP策略&amp;HttpOnly属性&amp;Filter过滤器&amp;标签闭合&amp;事件触发</h3>
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E6%B3%A8%E5%85%A5"><span class="toc-number">1.</span> <span class="toc-text">数据库注入</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E3%80%90Web%E6%94%BB%E9%98%B2%E3%80%91%E7%AC%AC41%E5%A4%A9%EF%BC%9AASP%E5%BA%94%E7%94%A8-HTTP-SYS-%E7%9F%AD%E6%96%87%E4%BB%B6-%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90-Access%E6%B3%A8%E5%85%A5-%E6%95%B0%E6%8D%AE%E5%BA%93%E6%B3%84%E6%BC%8F"><span class="toc-number">1.1.</span> <span class="toc-text">【Web攻防】第41天：ASP应用&amp;HTTP.SYS&amp;短文件&amp;文件解析&amp;Access注入&amp;数据库泄漏</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC42%E5%A4%A9%EF%BC%9APHP%E5%BA%94%E7%94%A8-MYSQL%E6%9E%B6%E6%9E%84-SQL%E6%B3%A8%E5%85%A5-%E8%B7%A8%E5%BA%93%E6%9F%A5%E8%AF%A2-%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99-%E6%9D%83%E9%99%90%E6%93%8D%E4%BD%9C"><span class="toc-number">1.2.</span> <span class="toc-text">第42天：PHP应用&amp;MYSQL架构&amp;SQL注入&amp;跨库查询&amp;文件读写&amp;权限操作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC43%E5%A4%A9%EF%BC%9APHP%E5%BA%94%E7%94%A8-SQL%E6%B3%A8%E5%85%A5-%E7%AC%A6%E5%8F%B7%E6%8B%BC%E6%8E%A5-%E8%AF%B7%E6%B1%82%E6%96%B9%E6%B3%95-HTTP%E5%A4%B4-JSON-%E7%BC%96%E7%A0%81%E7%B1%BB"><span class="toc-number">1.3.</span> <span class="toc-text">第43天：PHP应用&amp;SQL注入&amp;符号拼接&amp;请求方法&amp;HTTP头&amp;JSON&amp;编码类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC44%E5%A4%A9%EF%BC%9APHP%E5%BA%94%E7%94%A8-SQL%E7%9B%B2%E6%B3%A8-%E5%B8%83%E5%B0%94%E5%9B%9E%E6%98%BE-%E5%BB%B6%E6%97%B6%E5%88%A4%E6%96%AD-%E6%8A%A5%E9%94%99%E5%A4%84%E7%90%86-%E5%A2%9E%E5%88%A0%E6%94%B9%E6%9F%A5%E6%96%B9%E5%BC%8F"><span class="toc-number">1.4.</span> <span class="toc-text">第44天：PHP应用&amp;SQL盲注&amp;布尔回显&amp;延时判断&amp;报错处理&amp;增删改查方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC45%E5%A4%A9%EF%BC%9APHP%E5%BA%94%E7%94%A8-SQL%E4%BA%8C%E6%AC%A1%E6%B3%A8%E5%85%A5-%E5%A0%86%E5%8F%A0%E6%89%A7%E8%A1%8C-DNS%E5%B8%A6%E5%A4%96-%E5%8A%9F%E8%83%BD%E7%82%B9-%E9%BB%91%E7%99%BD%E7%9B%92%E6%9D%A1%E4%BB%B6"><span class="toc-number">1.5.</span> <span class="toc-text">第45天：PHP应用&amp;SQL二次注入&amp;堆叠执行&amp;DNS带外&amp;功能点&amp;黑白盒条件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC46%E5%A4%A9%EF%BC%9A%E6%B3%A8%E5%85%A5%E5%B7%A5%E5%85%B7-SQLMAP-Tamper%E7%BC%96%E5%86%99-%E6%8C%87%E7%BA%B9%E4%BF%AE%E6%94%B9-%E9%AB%98%E6%9D%83%E9%99%90%E6%93%8D%E4%BD%9C-%E7%9B%AE%E5%BD%95%E6%9E%B6%E6%9E%84"><span class="toc-number">1.6.</span> <span class="toc-text">第46天：注入工具&amp;SQLMAP&amp;Tamper编写&amp;指纹修改&amp;高权限操作&amp;目录架构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0"><span class="toc-number">2.</span> <span class="toc-text">文件上传</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC47%E5%A4%A9%EF%BC%9APHP%E5%BA%94%E7%94%A8-%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0-%E5%87%BD%E6%95%B0%E7%BC%BA%E9%99%B7-%E6%9D%A1%E4%BB%B6%E7%AB%9E%E4%BA%89-%E4%BA%8C%E6%AC%A1%E6%B8%B2%E6%9F%93-%E9%BB%91%E7%99%BD%E5%90%8D%E5%8D%95-JS%E7%BB%95%E8%BF%87"><span class="toc-number">2.1.</span> <span class="toc-text">第47天：PHP应用&amp;文件上传&amp;函数缺陷&amp;条件竞争&amp;二次渲染&amp;黑白名单&amp;JS绕过</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC48%E5%A4%A9%EF%BC%9APHP%E5%BA%94%E7%94%A8-%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0-%E4%B8%AD%E9%97%B4%E4%BB%B6CVE%E8%A7%A3%E6%9E%90-%E7%AC%AC%E4%B8%89%E6%96%B9%E7%BC%96%E8%BE%91%E5%99%A8-%E5%B7%B2%E7%9F%A5CMS%E6%BC%8F%E6%B4%9E"><span class="toc-number">2.2.</span> <span class="toc-text">第48天：PHP应用&amp;文件上传&amp;中间件CVE解析&amp;第三方编辑器&amp;已知CMS漏洞</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC49%E5%A4%A9%EF%BC%9A%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0-%E5%AD%98%E5%82%A8%E5%AE%89%E5%85%A8-OSS%E5%AF%B9%E8%B1%A1-%E5%88%86%E7%AB%99-%E8%A7%A3%E6%9E%90%E5%AE%89%E5%85%A8-%E8%A7%A3%E7%A0%81%E8%BF%98%E5%8E%9F-%E7%9B%AE%E5%BD%95%E6%89%A7%E8%A1%8C"><span class="toc-number">2.3.</span> <span class="toc-text">第49天：文件上传&amp;存储安全&amp;OSS对象&amp;分站&amp;解析安全&amp;解码还原&amp;目录执行</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC50%E5%A4%A9%EF%BC%9APHP%E5%BA%94%E7%94%A8-%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB-LFI-RFI-%E4%BC%AA%E5%8D%8F%E8%AE%AE%E7%BC%96%E7%A0%81%E7%AE%97%E6%B3%95-%E6%97%A0%E6%96%87%E4%BB%B6%E5%88%A9%E7%94%A8-%E9%BB%91%E7%99%BD%E7%9B%92"><span class="toc-number">2.4.</span> <span class="toc-text">第50天：PHP应用&amp;文件包含&amp;LFI&amp;RFI&amp;伪协议编码算法&amp;无文件利用&amp;黑白盒</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC51%E5%A4%A9%EF%BC%9A%E5%89%8D%E5%90%8E%E5%8F%B0%E5%8A%9F%E8%83%BD%E7%82%B9-%E6%96%87%E4%BB%B6%E4%B8%8B%E8%BD%BD-%E6%96%87%E4%BB%B6%E8%AF%BB%E5%8F%96-%E6%96%87%E4%BB%B6%E5%88%A0%E9%99%A4-%E7%9B%AE%E5%BD%95%E9%81%8D%E5%8E%86-%E7%9B%AE%E5%BD%95%E7%A9%BF%E8%B6%8A"><span class="toc-number">2.5.</span> <span class="toc-text">第51天：前后台功能点&amp;文件下载&amp;文件读取&amp;文件删除&amp;目录遍历&amp;目录穿越</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XSS%E8%B7%A8%E7%AB%99%E8%84%9A%E6%9C%AC"><span class="toc-number">3.</span> <span class="toc-text">XSS跨站脚本</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC52%E5%A4%A9%EF%BC%9AXSS%E8%B7%A8%E7%AB%99-%E5%8F%8D%E5%B0%84%E5%9E%8B-%E5%AD%98%E5%82%A8%E5%9E%8B-DOM%E5%9E%8B-%E6%A0%87%E7%AD%BE%E9%97%AD%E5%90%88-%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BA-JS%E4%BB%A3%E7%A0%81%E8%A7%A3%E6%9E%90"><span class="toc-number">3.1.</span> <span class="toc-text">第52天：XSS跨站&amp;反射型&amp;存储型&amp;DOM型&amp;标签闭合&amp;输入输出&amp;JS代码解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC53%E5%A4%A9%EF%BC%9AXSS%E8%B7%A8%E7%AB%99-SVG-PDF-Flash-MXSS-UXSS-%E9%85%8D%E5%90%88%E4%B8%8A%E4%BC%A0-%E6%96%87%E4%BB%B6%E6%B7%BB%E5%8A%A0%E8%84%9A%E6%9C%AC"><span class="toc-number">3.2.</span> <span class="toc-text">第53天：XSS跨站&amp;SVG&amp;PDF&amp;Flash&amp;MXSS&amp;UXSS&amp;配合上传&amp;文件添加脚本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC54%E5%A4%A9%EF%BC%9AXSS%E8%B7%A8%E7%AB%99-Cookie%E7%9B%97%E5%8F%96-%E8%A1%A8%E5%8D%95%E5%8A%AB%E6%8C%81-%E7%BD%91%E7%BB%9C%E9%92%93%E9%B1%BC-%E6%BA%AF%E6%BA%90%E5%88%86%E6%9E%90-%E9%A1%B9%E7%9B%AE%E5%B9%B3%E5%8F%B0%E6%A1%86%E6%9E%B6"><span class="toc-number">3.3.</span> <span class="toc-text">第54天：XSS跨站&amp;Cookie盗取&amp;表单劫持&amp;网络钓鱼&amp;溯源分析&amp;项目平台框架</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%AC%AC55%E5%A4%A9%EF%BC%9AXSS%E8%B7%A8%E7%AB%99-CSP%E7%AD%96%E7%95%A5-HttpOnly%E5%B1%9E%E6%80%A7-Filter%E8%BF%87%E6%BB%A4%E5%99%A8-%E6%A0%87%E7%AD%BE%E9%97%AD%E5%90%88-%E4%BA%8B%E4%BB%B6%E8%A7%A6%E5%8F%91"><span class="toc-number">3.4.</span> <span class="toc-text">第55天：XSS跨站&amp;CSP策略&amp;HttpOnly属性&amp;Filter过滤器&amp;标签闭合&amp;事件触发</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&text=Web攻防基础-小迪安全"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=Web攻防基础-小迪安全"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&is_video=false&description=Web攻防基础-小迪安全"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Web攻防基础-小迪安全&body=Check out this article: http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=Web攻防基础-小迪安全"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=Web攻防基础-小迪安全"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=Web攻防基础-小迪安全"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=Web攻防基础-小迪安全"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&name=Web攻防基础-小迪安全&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&t=Web攻防基础-小迪安全"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2025
+    John Doe
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="PHP反序列化专题 第60天：PHP反序列化&amp;POP链构造&amp;魔术方法流程&amp;漏洞触发条件&amp;属性修改序列化就像是家具作为零件被打包便于运输，而反序列化就是组装起来，恢复应有的功能 unset实现销毁，这样能演示construct和destruct触发两次 看到xiaodi，讲invoke魔术方法里面有参数，那如果在类外面的对象当作函数使用时，函数的参数个数不匹配，会触发">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PHP反序列化专题">
+<meta property="og:url" content="http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="PHP反序列化专题 第60天：PHP反序列化&amp;POP链构造&amp;魔术方法流程&amp;漏洞触发条件&amp;属性修改序列化就像是家具作为零件被打包便于运输，而反序列化就是组装起来，恢复应有的功能 unset实现销毁，这样能演示construct和destruct触发两次 看到xiaodi，讲invoke魔术方法里面有参数，那如果在类外面的对象当作函数使用时，函数的参数个数不匹配，会触发">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2025-07-21T22:48:30.000Z">
+<meta property="article:modified_time" content="2025-07-23T15:24:43.824Z">
+<meta property="article:author" content="John Doe">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>PHP反序列化专题</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2025/07/23/%E9%80%BB%E8%BE%91%E6%BC%8F%E6%B4%9E-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2025/07/22/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB%E4%BC%9A%E7%96%91%E9%9A%BE%E6%9D%82%E7%97%87/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/&text=PHP反序列化专题"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/&title=PHP反序列化专题"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/&is_video=false&description=PHP反序列化专题"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=PHP反序列化专题&body=Check out this article: http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/&title=PHP反序列化专题"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/&title=PHP反序列化专题"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/&title=PHP反序列化专题"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/&title=PHP反序列化专题"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/&name=PHP反序列化专题&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/&t=PHP反序列化专题"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC60%E5%A4%A9%EF%BC%9APHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-POP%E9%93%BE%E6%9E%84%E9%80%A0-%E9%AD%94%E6%9C%AF%E6%96%B9%E6%B3%95%E6%B5%81%E7%A8%8B-%E6%BC%8F%E6%B4%9E%E8%A7%A6%E5%8F%91%E6%9D%A1%E4%BB%B6-%E5%B1%9E%E6%80%A7%E4%BF%AE%E6%94%B9"><span class="toc-number">1.</span> <span class="toc-text">第60天：PHP反序列化&amp;POP链构造&amp;魔术方法流程&amp;漏洞触发条件&amp;属性修改</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC61%E5%A4%A9%EF%BC%9APHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-%E5%8E%9F%E7%94%9F%E7%B1%BBTIPS-%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%80%83%E9%80%B8-CVE%E7%BB%95%E8%BF%87%E6%BC%8F%E6%B4%9E-%E5%B1%9E%E6%80%A7%E7%B1%BB%E5%9E%8B%E7%89%B9%E5%BE%81"><span class="toc-number">2.</span> <span class="toc-text">第61天：PHP反序列化&amp;原生类TIPS&amp;字符串逃逸&amp;CVE绕过漏洞&amp;属性类型特征</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC62%E5%A4%A9%EF%BC%9APHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-CLI%E6%A1%86%E6%9E%B6%E7%B1%BB-PHPGGC%E7%94%9F%E6%88%90%E5%99%A8-TP-Yii-Laravel%E7%AD%89%E5%88%A9%E7%94%A8"><span class="toc-number">3.</span> <span class="toc-text">第62天：PHP反序列化&amp;CLI框架类&amp;PHPGGC生成器&amp;TP&amp;Yii&amp;Laravel等利用</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        PHP反序列化专题
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">John Doe</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-07-21T22:48:30.000Z" class="dt-published" itemprop="datePublished">2025-07-22</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p>PHP反序列化专题</p>
+<h2 id="第60天：PHP反序列化-POP链构造-魔术方法流程-漏洞触发条件-属性修改"><a href="#第60天：PHP反序列化-POP链构造-魔术方法流程-漏洞触发条件-属性修改" class="headerlink" title="第60天：PHP反序列化&amp;POP链构造&amp;魔术方法流程&amp;漏洞触发条件&amp;属性修改"></a>第60天：PHP反序列化&amp;POP链构造&amp;魔术方法流程&amp;漏洞触发条件&amp;属性修改</h2><p>序列化就像是家具作为零件被打包便于运输，而反序列化就是组装起来，恢复应有的功能</p>
+<p>unset实现销毁，这样能演示construct和destruct触发两次</p>
+<p>看到xiaodi，讲invoke魔术方法里面有参数，那如果在类外面的对象当作函数使用时，函数的参数个数不匹配，会触发invoke吗「GPT骗我说会触发」</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//PHP 会先触发 __invoke()，然后再检测参数个数是否匹配，如果不匹配会抛出一个 ArgumentCountError，不是说不会触发，而是触发了然后报错</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__invoke</span>(<span class="params"><span class="variable">$a</span>, <span class="variable">$b</span> = <span class="number">42</span></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="string">&quot;a = <span class="subst">$a</span>, b = <span class="subst">$b</span>\n&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="variable">$obj</span> = <span class="keyword">new</span> <span class="title class_">Test</span>();</span><br><span class="line"><span class="comment">//$obj(); </span></span><br><span class="line"><span class="variable">$obj</span>(<span class="number">1</span>);         <span class="comment">// 输出：a = 1, b = 42</span></span><br><span class="line"><span class="variable">$obj</span>(<span class="number">1</span>, <span class="number">100</span>);    <span class="comment">// 输出：a = 1, b = 100</span></span><br><span class="line"><span class="comment">//实际：PHP Fatal error:  Uncaught ArgumentCountError: Too few arguments to function Test::__invoke(),</span></span><br></pre></td></tr></table></figure>
+
+<p>之前专门学过PHP反序列化，发现小迪还是讲的很快的</p>
+<p>发现小迪举的例子真的很好：类A里cmd变量和destruct方法system，类外反序列化（Get传参数x），之后有无new 类A触发反序列化的演示，最后Get传参数达到RCE</p>
+<p>destruct是为了效率吗</p>
+<p>实战不问如何发现反序列化漏洞，而问如何利用</p>
+<p>白盒扫描器发现，而非黑盒发现，那么java呢</p>
+<blockquote>
+<p> 渗透资源还是少，越往上学越是（漏洞学习到复现到实战挖洞），不像开发，很多细枝末节的问题能搜到</p>
+</blockquote>
+<h2 id="第61天：PHP反序列化-原生类TIPS-字符串逃逸-CVE绕过漏洞-属性类型特征"><a href="#第61天：PHP反序列化-原生类TIPS-字符串逃逸-CVE绕过漏洞-属性类型特征" class="headerlink" title="第61天：PHP反序列化&amp;原生类TIPS&amp;字符串逃逸&amp;CVE绕过漏洞&amp;属性类型特征"></a>第61天：PHP反序列化&amp;原生类TIPS&amp;字符串逃逸&amp;CVE绕过漏洞&amp;属性类型特征</h2><p>1小时半开始听</p>
+<p>php.ini注释soap</p>
+<p>之后再次生成魔术方法的原生类</p>
+<p>woc，这个原生类之前我是真的一点都不知道，还是孤陋寡闻了，Exception的tostring弹出XSS「exception会把报错回显出来，你只要构造一个exception类对象给他反序列化了那不就相当于调用toString魔术方法了，把内容改成xss就弹窗了」</p>
+<p>确实，原生类像是JNDI之类的</p>
+<p>之前不知道原生类，所以写这题的时候一直没搞懂soap，以及和反序列化有什么关系</p>
+<p>最后还是要认真看</p>
+<p><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/264823">浅析PHP原生类-安全KER - 安全资讯平台</a></p>
+<h2 id="第62天：PHP反序列化-CLI框架类-PHPGGC生成器-TP-Yii-Laravel等利用"><a href="#第62天：PHP反序列化-CLI框架类-PHPGGC生成器-TP-Yii-Laravel等利用" class="headerlink" title="第62天：PHP反序列化&amp;CLI框架类&amp;PHPGGC生成器&amp;TP&amp;Yii&amp;Laravel等利用"></a>第62天：PHP反序列化&amp;CLI框架类&amp;PHPGGC生成器&amp;TP&amp;Yii&amp;Laravel等利用</h2><p>挖框架漏洞：需要开发、代码审计、漏洞的理解</p>
+<p>网上的框架漏洞可能POC不公开或分析过程看不懂，怎么办：工具解决反序列化链太过复杂，用工具生成PHPGGC</p>
+<p>YII为什么这个不需要backdoor前面加&#x2F;&#x2F;&#x2F;</p>
+<p>我去，直接访问flag不回显，还需要cp到静态的txt下再访问，还需要flag改为通配符</p>
+<blockquote>
+<p>别的行业可能因为隐私、引流、等缘故，但网安比如隐藏EXP，因为放出来真实的场景违法</p>
+</blockquote>
+<p>最后讲了序列化Web界面到IIS（VPS）上的安装</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC60%E5%A4%A9%EF%BC%9APHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-POP%E9%93%BE%E6%9E%84%E9%80%A0-%E9%AD%94%E6%9C%AF%E6%96%B9%E6%B3%95%E6%B5%81%E7%A8%8B-%E6%BC%8F%E6%B4%9E%E8%A7%A6%E5%8F%91%E6%9D%A1%E4%BB%B6-%E5%B1%9E%E6%80%A7%E4%BF%AE%E6%94%B9"><span class="toc-number">1.</span> <span class="toc-text">第60天：PHP反序列化&amp;POP链构造&amp;魔术方法流程&amp;漏洞触发条件&amp;属性修改</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC61%E5%A4%A9%EF%BC%9APHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-%E5%8E%9F%E7%94%9F%E7%B1%BBTIPS-%E5%AD%97%E7%AC%A6%E4%B8%B2%E9%80%83%E9%80%B8-CVE%E7%BB%95%E8%BF%87%E6%BC%8F%E6%B4%9E-%E5%B1%9E%E6%80%A7%E7%B1%BB%E5%9E%8B%E7%89%B9%E5%BE%81"><span class="toc-number">2.</span> <span class="toc-text">第61天：PHP反序列化&amp;原生类TIPS&amp;字符串逃逸&amp;CVE绕过漏洞&amp;属性类型特征</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC62%E5%A4%A9%EF%BC%9APHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-CLI%E6%A1%86%E6%9E%B6%E7%B1%BB-PHPGGC%E7%94%9F%E6%88%90%E5%99%A8-TP-Yii-Laravel%E7%AD%89%E5%88%A9%E7%94%A8"><span class="toc-number">3.</span> <span class="toc-text">第62天：PHP反序列化&amp;CLI框架类&amp;PHPGGC生成器&amp;TP&amp;Yii&amp;Laravel等利用</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/&text=PHP反序列化专题"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/&title=PHP反序列化专题"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/&is_video=false&description=PHP反序列化专题"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=PHP反序列化专题&body=Check out this article: http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/&title=PHP反序列化专题"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/&title=PHP反序列化专题"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/&title=PHP反序列化专题"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/&title=PHP反序列化专题"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/&name=PHP反序列化专题&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2025/07/22/PHP%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B8%93%E9%A2%98/&t=PHP反序列化专题"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2025
+    John Doe
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

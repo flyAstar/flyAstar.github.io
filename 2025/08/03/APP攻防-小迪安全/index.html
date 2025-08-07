@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="第85天：资产收集篇&amp;反证书检验&amp;XP框架&amp;反代理VPN&amp;数据转发&amp;反模拟器抓不到 工具证书配置问题、不走HTTP协议（游戏数据包抓不到）、代理检测、模拟器检测 封包监听工具 科来 检测模拟器： 用真机、模拟器模拟、逆向删除反代码重打包 vuls 靶场 app AndriodAPPsec JustmePlush、文件管理器（与电脑的共享文件夹）、XP模块">
+<meta property="og:type" content="article">
+<meta property="og:title" content="APP攻防-小迪安全">
+<meta property="og:url" content="http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/index.html">
+<meta property="og:site_name" content="flyAstar Blog">
+<meta property="og:description" content="第85天：资产收集篇&amp;反证书检验&amp;XP框架&amp;反代理VPN&amp;数据转发&amp;反模拟器抓不到 工具证书配置问题、不走HTTP协议（游戏数据包抓不到）、代理检测、模拟器检测 封包监听工具 科来 检测模拟器： 用真机、模拟器模拟、逆向删除反代码重打包 vuls 靶场 app AndriodAPPsec JustmePlush、文件管理器（与电脑的共享文件夹）、XP模块">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2025-08-03T06:36:07.000Z">
+<meta property="article:modified_time" content="2025-08-04T05:51:39.663Z">
+<meta property="article:author" content="flyAstar">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>APP攻防-小迪安全</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2025/08/01/%E6%9C%8D%E5%8A%A1%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&text=APP攻防-小迪安全"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=APP攻防-小迪安全"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&is_video=false&description=APP攻防-小迪安全"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=APP攻防-小迪安全&body=Check out this article: http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=APP攻防-小迪安全"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=APP攻防-小迪安全"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=APP攻防-小迪安全"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=APP攻防-小迪安全"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&name=APP攻防-小迪安全&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&t=APP攻防-小迪安全"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC85%E5%A4%A9%EF%BC%9A%E8%B5%84%E4%BA%A7%E6%94%B6%E9%9B%86%E7%AF%87-%E5%8F%8D%E8%AF%81%E4%B9%A6%E6%A3%80%E9%AA%8C-XP%E6%A1%86%E6%9E%B6-%E5%8F%8D%E4%BB%A3%E7%90%86VPN-%E6%95%B0%E6%8D%AE%E8%BD%AC%E5%8F%91-%E5%8F%8D%E6%A8%A1%E6%8B%9F%E5%99%A8"><span class="toc-number">1.</span> <span class="toc-text">第85天：资产收集篇&amp;反证书检验&amp;XP框架&amp;反代理VPN&amp;数据转发&amp;反模拟器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC86%E5%A4%A9%EF%BC%9A%E8%B5%84%E4%BA%A7%E6%94%B6%E9%9B%86%E7%AF%87-Frida-HOOK-Xposed-%E8%AF%81%E4%B9%A6%E6%8F%90%E5%8F%96-%E5%8D%95%E5%90%91%E5%8F%8C%E5%90%91-%E6%A3%80%E9%AA%8C%E6%8A%93%E5%8C%85"><span class="toc-number">2.</span> <span class="toc-text">第86天：资产收集篇&amp;Frida&amp;HOOK&amp;Xposed&amp;证书提取&amp;单向双向&amp;检验抓包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC87%E5%A4%A9%EF%BC%9A%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91%E7%AF%87-Smail%E8%AF%AD%E6%B3%95-%E5%8F%8D%E7%BC%96%E8%AF%91%E7%AD%BE%E5%90%8D%E9%87%8D%E6%89%93%E5%8C%85-Activity%E5%91%A8%E6%9C%9F-Hook%E6%A8%A1%E5%9D%97"><span class="toc-number">3.</span> <span class="toc-text">第87天：安卓逆向篇&amp;Smail语法&amp;反编译签名重打包&amp;Activity周期&amp;Hook模块</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC88%E5%A4%A9%EF%BC%9AAPP%E6%94%BB%E9%98%B2-%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91%E7%AF%87-JEB%E5%8F%8D%E7%BC%96%E8%AF%91%E6%96%AD%E7%82%B9-%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95-%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E8%BF%98%E5%8E%9F-%E9%80%BB%E8%BE%91%E4%BC%9A%E5%91%98%E7%BB%95%E8%BF%87"><span class="toc-number">4.</span> <span class="toc-text">第88天：APP攻防-安卓逆向篇&amp;JEB反编译断点&amp;动态调试&amp;加密算法还原&amp;逻辑会员绕过</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC89%E5%A4%A9%EF%BC%9A%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91%E7%AF%87-LSP%E6%A8%A1%E5%9D%97-HOOK%E6%B7%BB%E5%8A%A0%E6%8A%80%E6%9C%AF-%E7%BB%95%E8%BF%87%E6%A3%80%E6%B5%8B-%E7%AE%97%E6%B3%95%E8%A7%A3%E5%AF%86-%E9%80%BB%E8%BE%91%E9%AA%8C%E8%AF%81"><span class="toc-number">5.</span> <span class="toc-text">第89天：安卓逆向篇&amp;LSP模块&amp;HOOK添加技术&amp;绕过检测&amp;算法解密&amp;逻辑验证</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC90%E5%A4%A9%EF%BC%9A%E5%B0%8F%E7%A8%8B%E5%BA%8F%E7%AF%87-%E5%8F%8D%E7%BC%96%E8%AF%91-%E5%A4%96%E5%9C%A8%E6%8A%93%E5%8C%85-%E4%B8%BB%E5%8C%85%E5%88%86%E5%8C%85-%E9%85%8D%E7%BD%AE%E6%B3%84%E6%BC%8F-%E7%AE%97%E6%B3%95%E9%80%86%E5%90%91-%E6%9C%AA%E6%8E%88%E6%9D%83"><span class="toc-number">6.</span> <span class="toc-text">第90天：小程序篇&amp;反编译&amp;外在抓包&amp;主包分包&amp;配置泄漏&amp;算法逆向&amp;未授权</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E3%80%90API%E5%AE%89%E5%85%A8%E3%80%91%E7%AC%AC91%E5%A4%A9%EF%BC%9A%E6%8E%A5%E5%8F%A3%E5%AE%89%E5%85%A8-SOAP-OpenAPI-RESTful-%E5%88%86%E7%B1%BB%E7%89%B9%E5%BE%81%E5%AF%BC%E5%85%A5-%E9%A1%B9%E7%9B%AE%E8%81%94%E5%8A%A8%E6%A3%80%E6%B5%8B"><span class="toc-number">7.</span> <span class="toc-text">【API安全】第91天：接口安全&amp;SOAP&amp;OpenAPI&amp;RESTful&amp;分类特征导入&amp;项目联动检测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E3%80%90%E7%B3%BB%E7%BB%9F%E5%AE%89%E5%85%A8%E3%80%91%E7%AC%AC92%E5%A4%A9%EF%BC%9AWindows-Linux-%E8%BF%9C%E7%A8%8B%E6%8E%A2%E9%92%88-%E6%9C%AC%E5%9C%B0%E8%87%AA%E6%A3%80-%E4%BB%BB%E6%84%8F%E6%89%A7%E8%A1%8C-%E6%9D%83%E9%99%90%E6%8F%90%E5%8D%87-%E5%85%A5%E5%8F%A3%E7%82%B9-ev"><span class="toc-number">8.</span> <span class="toc-text">【系统安全】第92天：Windows&amp;Linux&amp;远程探针&amp;本地自检&amp;任意执行&amp;权限提升&amp;入口点_ev</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        APP攻防-小迪安全
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">flyAstar</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-08-03T06:36:07.000Z" class="dt-published" itemprop="datePublished">2025-08-03</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="第85天：资产收集篇-反证书检验-XP框架-反代理VPN-数据转发-反模拟器"><a href="#第85天：资产收集篇-反证书检验-XP框架-反代理VPN-数据转发-反模拟器" class="headerlink" title="第85天：资产收集篇&amp;反证书检验&amp;XP框架&amp;反代理VPN&amp;数据转发&amp;反模拟器"></a>第85天：资产收集篇&amp;反证书检验&amp;XP框架&amp;反代理VPN&amp;数据转发&amp;反模拟器</h2><p>抓不到</p>
+<p>工具证书配置问题、不走HTTP协议（游戏数据包抓不到）、代理检测、模拟器检测</p>
+<p>封包监听工具 科来</p>
+<p>检测模拟器：</p>
+<p>用真机、模拟器模拟、逆向删除反代码重打包</p>
+<p>vuls 靶场 app AndriodAPPsec</p>
+<p>JustmePlush、文件管理器（与电脑的共享文件夹）、XP模块  XPosed Installer</p>
+<p>Kills SSL cert 单向验证；之后SSL Pinning验证</p>
+<p>检测HOOK框架</p>
+<p>检测代理：不在设置直接配置代理，选用其他软件postern；或电脑Proxifier抓取模拟器进程的流量</p>
+<p>wifi不行，5g可以</p>
+<p>证书校验、代理验证</p>
+<p>双重代理</p>
+<h2 id="第86天：资产收集篇-Frida-HOOK-Xposed-证书提取-单向双向-检验抓包"><a href="#第86天：资产收集篇-Frida-HOOK-Xposed-证书提取-单向双向-检验抓包" class="headerlink" title="第86天：资产收集篇&amp;Frida&amp;HOOK&amp;Xposed&amp;证书提取&amp;单向双向&amp;检验抓包"></a>第86天：资产收集篇&amp;Frida&amp;HOOK&amp;Xposed&amp;证书提取&amp;单向双向&amp;检验抓包</h2><p>MobSF自动化工具移动安全框架</p>
+<p>mobexler虚拟机 用于APP渗透，集成工具</p>
+<p>burp安装Client TLS cert 反编译后导入证书</p>
+<p>Frida+HOOK+Burp</p>
+<p>模拟器命令查看是X86非64</p>
+<p>r0capture</p>
+<p>API资源调用抓包</p>
+<p>返回包全部错误</p>
+<p>getAssets 获取软件的com.名</p>
+<h2 id="第87天：安卓逆向篇-Smail语法-反编译签名重打包-Activity周期-Hook模块"><a href="#第87天：安卓逆向篇-Smail语法-反编译签名重打包-Activity周期-Hook模块" class="headerlink" title="第87天：安卓逆向篇&amp;Smail语法&amp;反编译签名重打包&amp;Activity周期&amp;Hook模块"></a>第87天：安卓逆向篇&amp;Smail语法&amp;反编译签名重打包&amp;Activity周期&amp;Hook模块</h2><p>反编译签名重打包 只适用于简单的脱壳</p>
+<p>案例：wuaipojie apk教程</p>
+<p>jadx逆向</p>
+<p>MT工具 反编译、查字符串，修改后打包apk，重签名 后来dex文件打不开</p>
+<p>开发者助手，抓去文字 抓控件属性</p>
+<p>APKScan查壳工具</p>
+<p>smali语法 less equal</p>
+<p>虽然看不太懂，不过学技术还是很有趣的</p>
+<p>NT管理器</p>
+<p>广告弹窗：开发者助手查看弹窗的Activity ，代码找到AdActivity修改弹窗时间</p>
+<p>bannerViewPager</p>
+<p>啊，没想到真的实现了开通会员，不过跟踪会员，找到具体某个smail文件，定位到会员已开通的逻辑判断，跳转到上一级，修改返回值0x0到1，进而实现，这一步步很复杂。</p>
+<p>小黄鸟，返回包VIP的值固定</p>
+<p>技术得学啊</p>
+<p>LSP和magsik建议先不安装</p>
+<h2 id="第88天：APP攻防-安卓逆向篇-JEB反编译断点-动态调试-加密算法还原-逻辑会员绕过"><a href="#第88天：APP攻防-安卓逆向篇-JEB反编译断点-动态调试-加密算法还原-逻辑会员绕过" class="headerlink" title="第88天：APP攻防-安卓逆向篇&amp;JEB反编译断点&amp;动态调试&amp;加密算法还原&amp;逻辑会员绕过"></a>第88天：APP攻防-安卓逆向篇&amp;JEB反编译断点&amp;动态调试&amp;加密算法还原&amp;逻辑会员绕过</h2><p>Jeb 建议Java11 激活</p>
+<p>ADB</p>
+<p>APP加入动态调试</p>
+<p>反编译 return 真 进入正确逻辑</p>
+<p>v7 算出值 输入值写入，相等 进入正确逻辑</p>
+<p>天呐！思路能理解，一步步的操作细节不懂</p>
+<p>鬼鬼JS调试工具，用于DES密文的解密</p>
+<h2 id="第89天：安卓逆向篇-LSP模块-HOOK添加技术-绕过检测-算法解密-逻辑验证"><a href="#第89天：安卓逆向篇-LSP模块-HOOK添加技术-绕过检测-算法解密-逻辑验证" class="headerlink" title="第89天：安卓逆向篇&amp;LSP模块&amp;HOOK添加技术&amp;绕过检测&amp;算法解密&amp;逻辑验证"></a>第89天：安卓逆向篇&amp;LSP模块&amp;HOOK添加技术&amp;绕过检测&amp;算法解密&amp;逻辑验证</h2><p>B站没上传成功</p>
+<h2 id="第90天：小程序篇-反编译-外在抓包-主包分包-配置泄漏-算法逆向-未授权"><a href="#第90天：小程序篇-反编译-外在抓包-主包分包-配置泄漏-算法逆向-未授权" class="headerlink" title="第90天：小程序篇&amp;反编译&amp;外在抓包&amp;主包分包&amp;配置泄漏&amp;算法逆向&amp;未授权"></a>第90天：小程序篇&amp;反编译&amp;外在抓包&amp;主包分包&amp;配置泄漏&amp;算法逆向&amp;未授权</h2><p>wechatex进程 proxifier转发到burp</p>
+<p>小程序反编译：</p>
+<p>wxUnpacker </p>
+<p>github没了 法律原因 unveilr 能解决多个分包的问题，直接写目录就行</p>
+<p>微信开发者工具 官方</p>
+<p>Wechatfiles&#x2F;Applet wxapkg小程序解密 </p>
+<p>分包组包</p>
+<p>jwt解码修改后得到他人sfz信息</p>
+<p>获取openid后，接口获取学生学号，支持绑定解绑</p>
+<h2 id="【API安全】第91天：接口安全-SOAP-OpenAPI-RESTful-分类特征导入-项目联动检测"><a href="#【API安全】第91天：接口安全-SOAP-OpenAPI-RESTful-分类特征导入-项目联动检测" class="headerlink" title="【API安全】第91天：接口安全&amp;SOAP&amp;OpenAPI&amp;RESTful&amp;分类特征导入&amp;项目联动检测"></a>【API安全】第91天：接口安全&amp;SOAP&amp;OpenAPI&amp;RESTful&amp;分类特征导入&amp;项目联动检测</h2><p>API指纹发现：</p>
+<p>分类：</p>
+<p>SOAP - WSDL</p>
+<p>ReadyApi </p>
+<p>POSTMan联动 burp 漏扫xray</p>
+<p>OpenAPI - Swagger</p>
+<p>Restful - v1&#x2F;api 寻找json</p>
+<p>GraphQL</p>
+<p>vapi靶场</p>
+<p>apiscan插件</p>
+<p>v2无法爆破</p>
+<p>api有没有waf防护 </p>
+<h2 id="【系统安全】第92天：Windows-Linux-远程探针-本地自检-任意执行-权限提升-入口点-ev"><a href="#【系统安全】第92天：Windows-Linux-远程探针-本地自检-任意执行-权限提升-入口点-ev" class="headerlink" title="【系统安全】第92天：Windows&amp;Linux&amp;远程探针&amp;本地自检&amp;任意执行&amp;权限提升&amp;入口点_ev"></a>【系统安全】第92天：Windows&amp;Linux&amp;远程探针&amp;本地自检&amp;任意执行&amp;权限提升&amp;入口点_ev</h2><blockquote>
+<p>感觉这一讲应该放到130讲，权限提升的篇章</p>
+</blockquote>
+<p>内网攻防</p>
+<p>nessus、nexpose 只是从网络层面探测</p>
+<p>zoho注册公司邮箱，申请许可证</p>
+<p>win提权辅助工具 <a target="_blank" rel="noopener" href="https://www.adminxe.com/win-exp/">Windows Privilege Escalation Exploit Search – Windows 提权辅助</a>  运行cmd命令<code>systeminfo</code>获取信息，粘贴systeminfo信息或只粘贴补丁信息到编辑框内。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/bitsadmin/wesng">bitsadmin&#x2F;wesng: Windows Exploit Suggester - Next Generation</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/The-Z-Labs/linux-exploit-suggester">The-Z-Labs&#x2F;linux-exploit-suggester：Linux 权限提升审计工具</a></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC85%E5%A4%A9%EF%BC%9A%E8%B5%84%E4%BA%A7%E6%94%B6%E9%9B%86%E7%AF%87-%E5%8F%8D%E8%AF%81%E4%B9%A6%E6%A3%80%E9%AA%8C-XP%E6%A1%86%E6%9E%B6-%E5%8F%8D%E4%BB%A3%E7%90%86VPN-%E6%95%B0%E6%8D%AE%E8%BD%AC%E5%8F%91-%E5%8F%8D%E6%A8%A1%E6%8B%9F%E5%99%A8"><span class="toc-number">1.</span> <span class="toc-text">第85天：资产收集篇&amp;反证书检验&amp;XP框架&amp;反代理VPN&amp;数据转发&amp;反模拟器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC86%E5%A4%A9%EF%BC%9A%E8%B5%84%E4%BA%A7%E6%94%B6%E9%9B%86%E7%AF%87-Frida-HOOK-Xposed-%E8%AF%81%E4%B9%A6%E6%8F%90%E5%8F%96-%E5%8D%95%E5%90%91%E5%8F%8C%E5%90%91-%E6%A3%80%E9%AA%8C%E6%8A%93%E5%8C%85"><span class="toc-number">2.</span> <span class="toc-text">第86天：资产收集篇&amp;Frida&amp;HOOK&amp;Xposed&amp;证书提取&amp;单向双向&amp;检验抓包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC87%E5%A4%A9%EF%BC%9A%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91%E7%AF%87-Smail%E8%AF%AD%E6%B3%95-%E5%8F%8D%E7%BC%96%E8%AF%91%E7%AD%BE%E5%90%8D%E9%87%8D%E6%89%93%E5%8C%85-Activity%E5%91%A8%E6%9C%9F-Hook%E6%A8%A1%E5%9D%97"><span class="toc-number">3.</span> <span class="toc-text">第87天：安卓逆向篇&amp;Smail语法&amp;反编译签名重打包&amp;Activity周期&amp;Hook模块</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC88%E5%A4%A9%EF%BC%9AAPP%E6%94%BB%E9%98%B2-%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91%E7%AF%87-JEB%E5%8F%8D%E7%BC%96%E8%AF%91%E6%96%AD%E7%82%B9-%E5%8A%A8%E6%80%81%E8%B0%83%E8%AF%95-%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95%E8%BF%98%E5%8E%9F-%E9%80%BB%E8%BE%91%E4%BC%9A%E5%91%98%E7%BB%95%E8%BF%87"><span class="toc-number">4.</span> <span class="toc-text">第88天：APP攻防-安卓逆向篇&amp;JEB反编译断点&amp;动态调试&amp;加密算法还原&amp;逻辑会员绕过</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC89%E5%A4%A9%EF%BC%9A%E5%AE%89%E5%8D%93%E9%80%86%E5%90%91%E7%AF%87-LSP%E6%A8%A1%E5%9D%97-HOOK%E6%B7%BB%E5%8A%A0%E6%8A%80%E6%9C%AF-%E7%BB%95%E8%BF%87%E6%A3%80%E6%B5%8B-%E7%AE%97%E6%B3%95%E8%A7%A3%E5%AF%86-%E9%80%BB%E8%BE%91%E9%AA%8C%E8%AF%81"><span class="toc-number">5.</span> <span class="toc-text">第89天：安卓逆向篇&amp;LSP模块&amp;HOOK添加技术&amp;绕过检测&amp;算法解密&amp;逻辑验证</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC90%E5%A4%A9%EF%BC%9A%E5%B0%8F%E7%A8%8B%E5%BA%8F%E7%AF%87-%E5%8F%8D%E7%BC%96%E8%AF%91-%E5%A4%96%E5%9C%A8%E6%8A%93%E5%8C%85-%E4%B8%BB%E5%8C%85%E5%88%86%E5%8C%85-%E9%85%8D%E7%BD%AE%E6%B3%84%E6%BC%8F-%E7%AE%97%E6%B3%95%E9%80%86%E5%90%91-%E6%9C%AA%E6%8E%88%E6%9D%83"><span class="toc-number">6.</span> <span class="toc-text">第90天：小程序篇&amp;反编译&amp;外在抓包&amp;主包分包&amp;配置泄漏&amp;算法逆向&amp;未授权</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E3%80%90API%E5%AE%89%E5%85%A8%E3%80%91%E7%AC%AC91%E5%A4%A9%EF%BC%9A%E6%8E%A5%E5%8F%A3%E5%AE%89%E5%85%A8-SOAP-OpenAPI-RESTful-%E5%88%86%E7%B1%BB%E7%89%B9%E5%BE%81%E5%AF%BC%E5%85%A5-%E9%A1%B9%E7%9B%AE%E8%81%94%E5%8A%A8%E6%A3%80%E6%B5%8B"><span class="toc-number">7.</span> <span class="toc-text">【API安全】第91天：接口安全&amp;SOAP&amp;OpenAPI&amp;RESTful&amp;分类特征导入&amp;项目联动检测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E3%80%90%E7%B3%BB%E7%BB%9F%E5%AE%89%E5%85%A8%E3%80%91%E7%AC%AC92%E5%A4%A9%EF%BC%9AWindows-Linux-%E8%BF%9C%E7%A8%8B%E6%8E%A2%E9%92%88-%E6%9C%AC%E5%9C%B0%E8%87%AA%E6%A3%80-%E4%BB%BB%E6%84%8F%E6%89%A7%E8%A1%8C-%E6%9D%83%E9%99%90%E6%8F%90%E5%8D%87-%E5%85%A5%E5%8F%A3%E7%82%B9-ev"><span class="toc-number">8.</span> <span class="toc-text">【系统安全】第92天：Windows&amp;Linux&amp;远程探针&amp;本地自检&amp;任意执行&amp;权限提升&amp;入口点_ev</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&text=APP攻防-小迪安全"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=APP攻防-小迪安全"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&is_video=false&description=APP攻防-小迪安全"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=APP攻防-小迪安全&body=Check out this article: http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=APP攻防-小迪安全"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=APP攻防-小迪安全"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=APP攻防-小迪安全"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=APP攻防-小迪安全"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&name=APP攻防-小迪安全&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&t=APP攻防-小迪安全"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2025
+    flyAstar
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

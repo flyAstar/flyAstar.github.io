@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="第70天：Python安全&amp;SSTI模版注入&amp;Jinja2引擎&amp;利用绕过项目&amp;黑盒检测SSTI：接受攻击者输入，将其作为Web应用模版一部分，模版可控造成代码注入 第71天：WEB攻防-Python安全&amp;反序列化利用链&amp;PYC文件反编译&amp;格式化字符串安全 可以XSS、6 模版引擎解析符号 查看哪些类可用 subclass 感觉利用的这个路径语">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python安全漏洞-SSTI-反序列化">
+<meta property="og:url" content="http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/index.html">
+<meta property="og:site_name" content="flyAstar Blog">
+<meta property="og:description" content="第70天：Python安全&amp;SSTI模版注入&amp;Jinja2引擎&amp;利用绕过项目&amp;黑盒检测SSTI：接受攻击者输入，将其作为Web应用模版一部分，模版可控造成代码注入 第71天：WEB攻防-Python安全&amp;反序列化利用链&amp;PYC文件反编译&amp;格式化字符串安全 可以XSS、6 模版引擎解析符号 查看哪些类可用 subclass 感觉利用的这个路径语">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2025-07-31T07:55:49.000Z">
+<meta property="article:modified_time" content="2025-08-06T13:50:01.181Z">
+<meta property="article:author" content="flyAstar">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Python安全漏洞-SSTI-反序列化</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2025/07/31/Vulnhub%E6%89%93%E9%9D%B6%E8%AE%B0%E5%BD%95/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2025/07/26/%E6%BC%8F%E6%B4%9E%E6%89%AB%E6%8F%8F%E7%AF%87/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&text=Python安全漏洞-SSTI-反序列化"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=Python安全漏洞-SSTI-反序列化"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&is_video=false&description=Python安全漏洞-SSTI-反序列化"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Python安全漏洞-SSTI-反序列化&body=Check out this article: http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=Python安全漏洞-SSTI-反序列化"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=Python安全漏洞-SSTI-反序列化"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=Python安全漏洞-SSTI-反序列化"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=Python安全漏洞-SSTI-反序列化"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&name=Python安全漏洞-SSTI-反序列化&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&t=Python安全漏洞-SSTI-反序列化"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC70%E5%A4%A9%EF%BC%9APython%E5%AE%89%E5%85%A8-SSTI%E6%A8%A1%E7%89%88%E6%B3%A8%E5%85%A5-Jinja2%E5%BC%95%E6%93%8E-%E5%88%A9%E7%94%A8%E7%BB%95%E8%BF%87%E9%A1%B9%E7%9B%AE-%E9%BB%91%E7%9B%92%E6%A3%80%E6%B5%8B"><span class="toc-number">1.</span> <span class="toc-text">第70天：Python安全&amp;SSTI模版注入&amp;Jinja2引擎&amp;利用绕过项目&amp;黑盒检测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC71%E5%A4%A9%EF%BC%9AWEB%E6%94%BB%E9%98%B2-Python%E5%AE%89%E5%85%A8-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%88%A9%E7%94%A8%E9%93%BE-PYC%E6%96%87%E4%BB%B6%E5%8F%8D%E7%BC%96%E8%AF%91-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%AE%89%E5%85%A8"><span class="toc-number">2.</span> <span class="toc-text">第71天：WEB攻防-Python安全&amp;反序列化利用链&amp;PYC文件反编译&amp;格式化字符串安全</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Python安全漏洞-SSTI-反序列化
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">flyAstar</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-07-31T07:55:49.000Z" class="dt-published" itemprop="datePublished">2025-07-31</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="第70天：Python安全-SSTI模版注入-Jinja2引擎-利用绕过项目-黑盒检测"><a href="#第70天：Python安全-SSTI模版注入-Jinja2引擎-利用绕过项目-黑盒检测" class="headerlink" title="第70天：Python安全&amp;SSTI模版注入&amp;Jinja2引擎&amp;利用绕过项目&amp;黑盒检测"></a>第70天：Python安全&amp;SSTI模版注入&amp;Jinja2引擎&amp;利用绕过项目&amp;黑盒检测</h2><p>SSTI：接受攻击者输入，将其作为Web应用模版一部分，模版可控造成代码注入</p>
+<p>第71天：WEB攻防-Python安全&amp;反序列化利用链&amp;PYC文件反编译&amp;格式化字符串安全</p>
+<p>可以XSS、6 模版引擎解析符号</p>
+<p>查看哪些类可用 subclass</p>
+<p>感觉利用的这个路径语法，可读性很差</p>
+<blockquote>
+<p>完全听不懂是吧？不用听懂啊。</p>
+</blockquote>
+<p>索引 一步步构造</p>
+<p>config、url_for、lipsum、get_flashed_messages</p>
+<p>CTFShow：361</p>
+<p>os.popen.read()能回显，system没有</p>
+<p>3: 过滤单引号 request.args.x 后面写参数值</p>
+<p>365:中括号过滤</p>
+<p>366:下划线过滤</p>
+<p>SSTIMap</p>
+<p>SSTI靶场</p>
+<h2 id="第71天：WEB攻防-Python安全-反序列化利用链-PYC文件反编译-格式化字符串安全"><a href="#第71天：WEB攻防-Python安全-反序列化利用链-PYC文件反编译-格式化字符串安全" class="headerlink" title="第71天：WEB攻防-Python安全&amp;反序列化利用链&amp;PYC文件反编译&amp;格式化字符串安全"></a>第71天：WEB攻防-Python安全&amp;反序列化利用链&amp;PYC文件反编译&amp;格式化字符串安全</h2><p>pyc反编译</p>
+<p>uncompyle6 反编译能 最终只有一个py文件吗</p>
+<p>pickle 反序列化 </p>
+<p>dumps序列化 字节流 loads反序列化</p>
+<p>反序列化会触发：reduce reduce_ex  setstate （类似于isset）</p>
+<p>序列化会触发：getstate</p>
+<p>标准的需要用return(eval,(“<strong>import</strong>(‘os’.system(‘calc’)”)); 直接system会报错且触发</p>
+<p>本来还以为例子是反序列化替代原有的属性值，结果直接弹计算器。</p>
+<p>nc反连，win环境不方便，用Python</p>
+<p>Pickle Store CTF <a target="_blank" rel="noopener" href="https://github.com/HACHp1/pickle_ctf_collection">HACHp1&#x2F;pickle_ctf_collection: pickle相关CTF题目源码整理</a> <a target="_blank" rel="noopener" href="https://github.com/wat3vr/watevrCTF-2019/tree/master/challenges/web/pickle%20store">watevrCTF-2019&#x2F;challenges&#x2F;web&#x2F;pickle store at master · wat3vr&#x2F;watevrCTF-2019</a> </p>
+<p>格式化字符串f-strings 执行字符中的表达式</p>
+<p>Python_audit python自动化审计 神魔</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC70%E5%A4%A9%EF%BC%9APython%E5%AE%89%E5%85%A8-SSTI%E6%A8%A1%E7%89%88%E6%B3%A8%E5%85%A5-Jinja2%E5%BC%95%E6%93%8E-%E5%88%A9%E7%94%A8%E7%BB%95%E8%BF%87%E9%A1%B9%E7%9B%AE-%E9%BB%91%E7%9B%92%E6%A3%80%E6%B5%8B"><span class="toc-number">1.</span> <span class="toc-text">第70天：Python安全&amp;SSTI模版注入&amp;Jinja2引擎&amp;利用绕过项目&amp;黑盒检测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC71%E5%A4%A9%EF%BC%9AWEB%E6%94%BB%E9%98%B2-Python%E5%AE%89%E5%85%A8-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%88%A9%E7%94%A8%E9%93%BE-PYC%E6%96%87%E4%BB%B6%E5%8F%8D%E7%BC%96%E8%AF%91-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%AE%89%E5%85%A8"><span class="toc-number">2.</span> <span class="toc-text">第71天：WEB攻防-Python安全&amp;反序列化利用链&amp;PYC文件反编译&amp;格式化字符串安全</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&text=Python安全漏洞-SSTI-反序列化"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=Python安全漏洞-SSTI-反序列化"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&is_video=false&description=Python安全漏洞-SSTI-反序列化"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Python安全漏洞-SSTI-反序列化&body=Check out this article: http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=Python安全漏洞-SSTI-反序列化"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=Python安全漏洞-SSTI-反序列化"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=Python安全漏洞-SSTI-反序列化"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=Python安全漏洞-SSTI-反序列化"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&name=Python安全漏洞-SSTI-反序列化&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&t=Python安全漏洞-SSTI-反序列化"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2025
+    flyAstar
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

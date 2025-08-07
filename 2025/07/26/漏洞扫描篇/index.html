@@ -6,15 +6,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta name="description" content="1 漏扫分为综合性和针对性（比如针对某个框架）；不是该先服务发现确认框架再打POC吗 AWVS 强爬虫（适用于Top10通用漏洞）、弱国内POC XRAY：弱爬虫、强国内POC 被动扫描： 与Burp配置代理（upstream proxy servers）联动，用于抓小程序、软件包 只有XRAY能被动，所以AWVS设置代理扫描，XRAY设置被动扫描 black ip 回连ip goby 插件 gu">
+    <meta name="description" content="【漏洞发现】第101天：漏扫项目篇&amp;Nuclei&amp;Yakit&amp;Goby&amp;Afrog&amp;Xray&amp;Awvs&amp;联动中转被动漏扫分为综合性和针对性（比如针对某个框架）；不是该先服务发现确认框架再打POC吗 AWVS 强爬虫（适用于Top10通用漏洞）、弱国内POC XRAY：弱爬虫、强国内POC 被动扫描： 与Burp配置代理（upstream pr">
 <meta property="og:type" content="article">
 <meta property="og:title" content="漏洞扫描篇">
 <meta property="og:url" content="http://example.com/2025/07/26/%E6%BC%8F%E6%B4%9E%E6%89%AB%E6%8F%8F%E7%AF%87/index.html">
 <meta property="og:site_name" content="flyAstar Blog">
-<meta property="og:description" content="1 漏扫分为综合性和针对性（比如针对某个框架）；不是该先服务发现确认框架再打POC吗 AWVS 强爬虫（适用于Top10通用漏洞）、弱国内POC XRAY：弱爬虫、强国内POC 被动扫描： 与Burp配置代理（upstream proxy servers）联动，用于抓小程序、软件包 只有XRAY能被动，所以AWVS设置代理扫描，XRAY设置被动扫描 black ip 回连ip goby 插件 gu">
+<meta property="og:description" content="【漏洞发现】第101天：漏扫项目篇&amp;Nuclei&amp;Yakit&amp;Goby&amp;Afrog&amp;Xray&amp;Awvs&amp;联动中转被动漏扫分为综合性和针对性（比如针对某个框架）；不是该先服务发现确认框架再打POC吗 AWVS 强爬虫（适用于Top10通用漏洞）、弱国内POC XRAY：弱爬虫、强国内POC 被动扫描： 与Burp配置代理（upstream pr">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2025-07-26T02:53:23.000Z">
-<meta property="article:modified_time" content="2025-07-28T21:07:16.333Z">
+<meta property="article:modified_time" content="2025-08-07T08:45:16.268Z">
 <meta property="article:author" content="flyAstar">
 <meta name="twitter:card" content="summary">
     
@@ -81,6 +81,8 @@
     <span id="actions">
       <ul>
         
+        <li><a class="icon" aria-label="Previous post" href="/2025/07/31/Python%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E-SSTI-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
         
         <li><a class="icon" aria-label="Next post" href="/2025/07/23/Web%E6%94%BB%E9%98%B2%E5%9F%BA%E7%A1%80-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
         
@@ -110,6 +112,10 @@
 
     </div>
     
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E3%80%90%E6%BC%8F%E6%B4%9E%E5%8F%91%E7%8E%B0%E3%80%91%E7%AC%AC101%E5%A4%A9%EF%BC%9A%E6%BC%8F%E6%89%AB%E9%A1%B9%E7%9B%AE%E7%AF%87-Nuclei-Yakit-Goby-Afrog-Xray-Awvs-%E8%81%94%E5%8A%A8%E4%B8%AD%E8%BD%AC%E8%A2%AB%E5%8A%A8"><span class="toc-number">1.</span> <span class="toc-text">【漏洞发现】第101天：漏扫项目篇&amp;Nuclei&amp;Yakit&amp;Goby&amp;Afrog&amp;Xray&amp;Awvs&amp;联动中转被动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC102%E5%A4%A9%EF%BC%9A%E6%BC%8F%E6%89%AB%E9%A1%B9%E7%9B%AE%E7%AF%87-Poc%E5%BC%80%E5%8F%91-Yaml%E8%AF%AD%E6%B3%95-%E6%8F%92%E4%BB%B6%E4%B8%80%E9%94%AE%E7%94%9F%E6%88%90-%E5%8C%B9%E9%85%8D%E7%BB%93%E6%9E%9C-%E4%BA%A4%E4%BA%92%E6%8F%90%E5%8F%96"><span class="toc-number">2.</span> <span class="toc-text">第102天：漏扫项目篇&amp;Poc开发&amp;Yaml语法&amp;插件一键生成&amp;匹配结果&amp;交互提取</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC103%E5%A4%A9%EF%BC%9A%E6%BC%8F%E6%89%AB%E9%A1%B9%E7%9B%AE%E7%AF%87-Poc%E5%BC%80%E5%8F%91-Rule%E8%AF%AD%E6%B3%95-%E5%8F%8D%E9%93%BE%E5%88%A4%E6%96%AD-%E4%B8%8D%E5%9B%9E%E6%98%BE%E6%A3%80%E6%B5%8B-Yaml%E7%94%9F%E6%88%90"><span class="toc-number">3.</span> <span class="toc-text">第103天：漏扫项目篇&amp;Poc开发&amp;Rule语法&amp;反链判断&amp;不回显检测&amp;Yaml生成</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC104%E5%A4%A9%EF%BC%9A%E6%BC%8F%E6%89%AB%E9%A1%B9%E7%9B%AE%E7%AF%87-%E6%AD%A6%E8%A3%85BURP-%E6%B5%8F%E8%A7%88%E5%99%A8%E6%8F%92%E4%BB%B6-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86-%E5%88%86%E6%9E%90%E8%BE%85%E5%8A%A9-%E9%81%A5%E9%81%A5%E9%A2%86%E5%85%88"><span class="toc-number">4.</span> <span class="toc-text">第104天：漏扫项目篇&amp;武装BURP&amp;浏览器插件&amp;信息收集&amp;分析辅助&amp;遥遥领先</span></a></li></ol>
+      </div>
     
   </span>
 </div>
@@ -148,8 +154,7 @@
   
 
   <div class="content e-content" itemprop="articleBody">
-    <p>1</p>
-<p>漏扫分为综合性和针对性（比如针对某个框架）；不是该先服务发现确认框架再打POC吗</p>
+    <h2 id="【漏洞发现】第101天：漏扫项目篇-Nuclei-Yakit-Goby-Afrog-Xray-Awvs-联动中转被动"><a href="#【漏洞发现】第101天：漏扫项目篇-Nuclei-Yakit-Goby-Afrog-Xray-Awvs-联动中转被动" class="headerlink" title="【漏洞发现】第101天：漏扫项目篇&amp;Nuclei&amp;Yakit&amp;Goby&amp;Afrog&amp;Xray&amp;Awvs&amp;联动中转被动"></a>【漏洞发现】第101天：漏扫项目篇&amp;Nuclei&amp;Yakit&amp;Goby&amp;Afrog&amp;Xray&amp;Awvs&amp;联动中转被动</h2><p>漏扫分为综合性和针对性（比如针对某个框架）；不是该先服务发现确认框架再打POC吗</p>
 <p>AWVS 强爬虫（适用于Top10通用漏洞）、弱国内POC</p>
 <p>XRAY：弱爬虫、强国内POC</p>
 <p>被动扫描：</p>
@@ -161,6 +166,37 @@
 <p>yaml文件对于不同的漏扫可能不通用</p>
 <p>接下来的几节课讲的是从CVE漏洞到POC的编写，打算先跳过，自己想听的时候如何快速用漏扫达到公司资产或网上src挖掘</p>
 <p>尽量用破解版本，批量测试用的多</p>
+<h2 id="第102天：漏扫项目篇-Poc开发-Yaml语法-插件一键生成-匹配结果-交互提取"><a href="#第102天：漏扫项目篇-Poc开发-Yaml语法-插件一键生成-匹配结果-交互提取" class="headerlink" title="第102天：漏扫项目篇&amp;Poc开发&amp;Yaml语法&amp;插件一键生成&amp;匹配结果&amp;交互提取"></a>第102天：漏扫项目篇&amp;Poc开发&amp;Yaml语法&amp;插件一键生成&amp;匹配结果&amp;交互提取</h2><p>VSCode+YAML插件</p>
+<p>Nuclei官方文档 主要看HTTP发包的</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41315957/article/details/126594572?spm=1001.2014.3001.5501">nuclei poc模板编写笔记（一）_nuclei poc编写-CSDN博客</a> <a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_41315957/article/details/126594670?spm=1001.2014.3001.5501">nuclei poc模板编写笔记（二-CSDN博客</a> </p>
+<p>空格代表缩进，而不是Tab</p>
+<p>编号ID</p>
+<p>信息info</p>
+<p>请求：Http file tcp</p>
+<p>匹配：matchers Interactsh</p>
+<p>提取：extractors</p>
+<p>这个漏扫项目的POC开发和Python的POC的优劣：导入即可，便于维护</p>
+<p>感觉小迪还是对自己不熟悉的内容讲的一般，比如只是照着博客念，AND OR其实提都不用提，而别的却又过的很快或讲解顺序不易理解</p>
+<p>minio </p>
+<p>zyxel 匹配交互</p>
+<p>提取器 匹配器 DNSlog改为工具</p>
+<p>nuclei burp plugin 数据包一键生成yaml</p>
+<p>yakit使用文档看看</p>
+<p>以后还要学网络编程</p>
+<h2 id="第103天：漏扫项目篇-Poc开发-Rule语法-反链判断-不回显检测-Yaml生成"><a href="#第103天：漏扫项目篇-Poc开发-Rule语法-反链判断-不回显检测-Yaml生成" class="headerlink" title="第103天：漏扫项目篇&amp;Poc开发&amp;Rule语法&amp;反链判断&amp;不回显检测&amp;Yaml生成"></a>第103天：漏扫项目篇&amp;Poc开发&amp;Rule语法&amp;反链判断&amp;不回显检测&amp;Yaml生成</h2><p>b字节流 匹配</p>
+<p>根据xray在VPS搭建反连平台 reverse dns、client 先关闭 还需要配置域名，在hosts修改解析到VPS</p>
+<p>poc xray cool GUI编写规则</p>
+<p>Afrog 检测log4j漏洞</p>
+<h2 id="第104天：漏扫项目篇-武装BURP-浏览器插件-信息收集-分析辅助-遥遥领先"><a href="#第104天：漏扫项目篇-武装BURP-浏览器插件-信息收集-分析辅助-遥遥领先" class="headerlink" title="第104天：漏扫项目篇&amp;武装BURP&amp;浏览器插件&amp;信息收集&amp;分析辅助&amp;遥遥领先"></a>第104天：漏扫项目篇&amp;武装BURP&amp;浏览器插件&amp;信息收集&amp;分析辅助&amp;遥遥领先</h2><p>Fiora：GUI POC的搜索运行；联动nuclei Run POC as TAGs 从CLI变成Burp的图形化界面的漏洞发现</p>
+<p>TsojanScan</p>
+<p>DNSlogPanel</p>
+<p>被动扫描</p>
+<p>Hae：高亮显示数据包</p>
+<p>Knife：各类工具的环境变量</p>
+<p>domain_hunter</p>
+<p>burpcustom 主题</p>
+<p>Hack Tools</p>
+<p>findsomething Js</p>
 
   </div>
 </article>
@@ -187,6 +223,10 @@
 
     
     
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E3%80%90%E6%BC%8F%E6%B4%9E%E5%8F%91%E7%8E%B0%E3%80%91%E7%AC%AC101%E5%A4%A9%EF%BC%9A%E6%BC%8F%E6%89%AB%E9%A1%B9%E7%9B%AE%E7%AF%87-Nuclei-Yakit-Goby-Afrog-Xray-Awvs-%E8%81%94%E5%8A%A8%E4%B8%AD%E8%BD%AC%E8%A2%AB%E5%8A%A8"><span class="toc-number">1.</span> <span class="toc-text">【漏洞发现】第101天：漏扫项目篇&amp;Nuclei&amp;Yakit&amp;Goby&amp;Afrog&amp;Xray&amp;Awvs&amp;联动中转被动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC102%E5%A4%A9%EF%BC%9A%E6%BC%8F%E6%89%AB%E9%A1%B9%E7%9B%AE%E7%AF%87-Poc%E5%BC%80%E5%8F%91-Yaml%E8%AF%AD%E6%B3%95-%E6%8F%92%E4%BB%B6%E4%B8%80%E9%94%AE%E7%94%9F%E6%88%90-%E5%8C%B9%E9%85%8D%E7%BB%93%E6%9E%9C-%E4%BA%A4%E4%BA%92%E6%8F%90%E5%8F%96"><span class="toc-number">2.</span> <span class="toc-text">第102天：漏扫项目篇&amp;Poc开发&amp;Yaml语法&amp;插件一键生成&amp;匹配结果&amp;交互提取</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC103%E5%A4%A9%EF%BC%9A%E6%BC%8F%E6%89%AB%E9%A1%B9%E7%9B%AE%E7%AF%87-Poc%E5%BC%80%E5%8F%91-Rule%E8%AF%AD%E6%B3%95-%E5%8F%8D%E9%93%BE%E5%88%A4%E6%96%AD-%E4%B8%8D%E5%9B%9E%E6%98%BE%E6%A3%80%E6%B5%8B-Yaml%E7%94%9F%E6%88%90"><span class="toc-number">3.</span> <span class="toc-text">第103天：漏扫项目篇&amp;Poc开发&amp;Rule语法&amp;反链判断&amp;不回显检测&amp;Yaml生成</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC104%E5%A4%A9%EF%BC%9A%E6%BC%8F%E6%89%AB%E9%A1%B9%E7%9B%AE%E7%AF%87-%E6%AD%A6%E8%A3%85BURP-%E6%B5%8F%E8%A7%88%E5%99%A8%E6%8F%92%E4%BB%B6-%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86-%E5%88%86%E6%9E%90%E8%BE%85%E5%8A%A9-%E9%81%A5%E9%81%A5%E9%A2%86%E5%85%88"><span class="toc-number">4.</span> <span class="toc-text">第104天：漏扫项目篇&amp;武装BURP&amp;浏览器插件&amp;信息收集&amp;分析辅助&amp;遥遥领先</span></a></li></ol>
+      </div>
+    
 
     <div id="share-footer" style="display: none">
       <ul>
@@ -207,6 +247,8 @@
 
     <div id="actions-footer">
         <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
         
         <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
         <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>

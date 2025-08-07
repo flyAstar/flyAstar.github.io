@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="【云安全】93天：云服务篇&amp;对象存储&amp;Bucket桶&amp;任意上传&amp;域名接管&amp;AccessKey泄漏对象存储：腾讯COS、阿里OSS、华为OBS Bucket OSS资源创建 权限：私有到公共读写 listObject展示 OSS不解析，只是下载，不能直接上传后门 域名也在阿里云，自动添加CNAME解析 没有备案，换成国外地区 域名接管 ：别人删除OSS后，你可">
+<meta property="og:type" content="article">
+<meta property="og:title" content="云安全-小迪安全">
+<meta property="og:url" content="http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/index.html">
+<meta property="og:site_name" content="flyAstar Blog">
+<meta property="og:description" content="【云安全】93天：云服务篇&amp;对象存储&amp;Bucket桶&amp;任意上传&amp;域名接管&amp;AccessKey泄漏对象存储：腾讯COS、阿里OSS、华为OBS Bucket OSS资源创建 权限：私有到公共读写 listObject展示 OSS不解析，只是下载，不能直接上传后门 域名也在阿里云，自动添加CNAME解析 没有备案，换成国外地区 域名接管 ：别人删除OSS后，你可">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2025-08-04T05:44:21.000Z">
+<meta property="article:modified_time" content="2025-08-06T13:49:58.378Z">
+<meta property="article:author" content="flyAstar">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>云安全-小迪安全</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2025/08/07/%E5%86%85%E7%BD%91Nu1L-25%E5%B9%B48%E6%9C%88/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2025/08/03/APP%E6%94%BB%E9%98%B2-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&text=云安全-小迪安全"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=云安全-小迪安全"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&is_video=false&description=云安全-小迪安全"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=云安全-小迪安全&body=Check out this article: http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=云安全-小迪安全"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=云安全-小迪安全"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=云安全-小迪安全"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=云安全-小迪安全"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&name=云安全-小迪安全&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&t=云安全-小迪安全"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E3%80%90%E4%BA%91%E5%AE%89%E5%85%A8%E3%80%9193%E5%A4%A9%EF%BC%9A%E4%BA%91%E6%9C%8D%E5%8A%A1%E7%AF%87-%E5%AF%B9%E8%B1%A1%E5%AD%98%E5%82%A8-Bucket%E6%A1%B6-%E4%BB%BB%E6%84%8F%E4%B8%8A%E4%BC%A0-%E5%9F%9F%E5%90%8D%E6%8E%A5%E7%AE%A1-AccessKey%E6%B3%84%E6%BC%8F"><span class="toc-number">1.</span> <span class="toc-text">【云安全】93天：云服务篇&amp;对象存储&amp;Bucket桶&amp;任意上传&amp;域名接管&amp;AccessKey泄漏</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC94%E5%A4%A9%EF%BC%9A%E4%BA%91%E6%9C%8D%E5%8A%A1%E7%AF%87-%E5%BC%B9%E6%80%A7%E8%AE%A1%E7%AE%97-%E4%BA%91%E6%95%B0%E6%8D%AE%E5%BA%93-%E5%AE%9E%E4%BE%8B%E5%85%83%E6%95%B0%E6%8D%AE-%E6%8E%A7%E5%88%B6%E8%A7%92%E8%89%B2-AK%E6%8E%A7%E5%88%B6%E5%8F%B0%E6%8E%A5%E7%AE%A1"><span class="toc-number">2.</span> <span class="toc-text">第94天：云服务篇&amp;弹性计算&amp;云数据库&amp;实例元数据&amp;控制角色&amp;AK控制台接管</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC95%E5%A4%A9%EF%BC%9A%E4%BA%91%E5%8E%9F%E7%94%9F%E7%AF%87-Docker%E5%AE%89%E5%85%A8-%E6%9D%83%E9%99%90%E7%8E%AF%E5%A2%83%E6%A3%80%E6%B5%8B-%E5%AE%B9%E5%99%A8%E9%80%83%E9%80%B8-%E7%89%B9%E6%9D%83%E6%A8%A1%E5%BC%8F-%E5%8D%B1%E9%99%A9%E6%8C%82%E8%BD%BD"><span class="toc-number">3.</span> <span class="toc-text">第95天：云原生篇&amp;Docker安全&amp;权限环境检测&amp;容器逃逸&amp;特权模式&amp;危险挂载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC96%E5%A4%A9%EF%BC%9A%E4%BA%91%E5%8E%9F%E7%94%9F%E7%AF%87-Docker%E5%AE%89%E5%85%A8-%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8-%E7%89%88%E6%9C%AC%E6%BC%8F%E6%B4%9E-CDK%E8%87%AA%E5%8A%A8%E5%88%A9%E7%94%A8-%E5%AE%B9%E5%99%A8%E9%80%83%E9%80%B8"><span class="toc-number">4.</span> <span class="toc-text">第96天：云原生篇&amp;Docker安全&amp;系统内核&amp;版本漏洞&amp;CDK自动利用&amp;容器逃逸</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC97%E5%A4%A9%EF%BC%9A%E4%BA%91%E5%8E%9F%E7%94%9F%E7%AF%87-Kubernetes-K8s%E5%AE%89%E5%85%A8-API-Kubelet%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE-%E5%AE%B9%E5%99%A8%E6%89%A7%E8%A1%8C"><span class="toc-number">5.</span> <span class="toc-text">第97天：云原生篇&amp;Kubernetes&amp;K8s安全&amp;API&amp;Kubelet未授权访问&amp;容器执行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC98%E5%A4%A9%EF%BC%9A%E4%BA%91%E5%8E%9F%E7%94%9F%E7%AF%87-K8s%E5%AE%89%E5%85%A8-Config%E6%B3%84%E6%BC%8F-Etcd%E5%AD%98%E5%82%A8-Dashboard%E9%89%B4%E6%9D%83-Proxy%E6%9A%B4%E9%9C%B2"><span class="toc-number">6.</span> <span class="toc-text">第98天：云原生篇&amp;K8s安全&amp;Config泄漏&amp;Etcd存储&amp;Dashboard鉴权&amp;Proxy暴露</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC99%E5%A4%A9%EF%BC%9A%E4%BA%91%E5%8E%9F%E7%94%9F%E7%AF%87-K8s%E5%AE%89%E5%85%A8-%E5%AE%9E%E6%88%98%E5%9C%BA%E6%99%AF-%E6%94%BB%E5%87%BBPod-%E6%B1%A1%E7%82%B9Taint-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8-%E5%AE%B9%E5%99%A8%E9%80%83%E9%80%B8"><span class="toc-number">7.</span> <span class="toc-text">第99天：云原生篇&amp;K8s安全&amp;实战场景&amp;攻击Pod&amp;污点Taint&amp;横向移动&amp;容器逃逸</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC100%E5%A4%A9%EF%BC%9A%E4%BA%91%E4%BA%A7%E5%93%81%E7%AF%87-%E5%A0%A1%E5%9E%92%E6%9C%BA%E5%9C%BA%E6%99%AF-JumpServer-%E7%BB%BF%E7%9B%9FSAS-Teleport-%E9%BA%92%E9%BA%9F-%E9%BD%90%E6%B2%BB"><span class="toc-number">8.</span> <span class="toc-text">第100天：云产品篇&amp;堡垒机场景&amp;JumpServer&amp;绿盟SAS&amp;Teleport&amp;麒麟&amp;齐治</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        云安全-小迪安全
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">flyAstar</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-08-04T05:44:21.000Z" class="dt-published" itemprop="datePublished">2025-08-04</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="【云安全】93天：云服务篇-对象存储-Bucket桶-任意上传-域名接管-AccessKey泄漏"><a href="#【云安全】93天：云服务篇-对象存储-Bucket桶-任意上传-域名接管-AccessKey泄漏" class="headerlink" title="【云安全】93天：云服务篇&amp;对象存储&amp;Bucket桶&amp;任意上传&amp;域名接管&amp;AccessKey泄漏"></a>【云安全】93天：云服务篇&amp;对象存储&amp;Bucket桶&amp;任意上传&amp;域名接管&amp;AccessKey泄漏</h2><p>对象存储：腾讯COS、阿里OSS、华为OBS</p>
+<p>Bucket OSS资源创建</p>
+<p>权限：私有到公共读写</p>
+<p>listObject展示</p>
+<p>OSS不解析，只是下载，不能直接上传后门</p>
+<p>域名也在阿里云，自动添加CNAME解析</p>
+<p>没有备案，换成国外地区</p>
+<p>域名接管 ：别人删除OSS后，你可以创建一个同名的，bucket名唯一（原有的域名解析还在）</p>
+<p>OSS浏览器</p>
+<p>正则表达式发现泄漏的AK&#x2F;SK特征 <a target="_blank" rel="noopener" href="https://x1lys.github.io/2024/07/12/%E4%BA%91%E4%B8%BB%E6%9C%BA%E5%AF%86%E9%92%A5%E6%B3%84%E9%9C%B2/">云主机密钥泄露 | X1ly?S</a></p>
+<p>teamssix wiki</p>
+<p>存储桶劫持 <a target="_blank" rel="noopener" href="https://x1lys.github.io/2024/07/16/%E6%B5%85%E6%9E%90OSS%E5%AD%98%E5%82%A8%E6%A1%B6%E6%BC%8F%E6%B4%9E/index.html">浅析OSS存储桶漏洞 | X1ly?S</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/m0_60571842/article/details/136372471">云上攻防-云服务篇&amp;对象存储&amp;Bucket桶&amp;任意上传&amp;域名接管&amp;AccessKey泄漏_阿里云存储筒域名接管-CSDN博客</a> 简单的记录小迪讲课复现的过程</p>
+<h2 id="第94天：云服务篇-弹性计算-云数据库-实例元数据-控制角色-AK控制台接管"><a href="#第94天：云服务篇-弹性计算-云数据库-实例元数据-控制角色-AK控制台接管" class="headerlink" title="第94天：云服务篇&amp;弹性计算&amp;云数据库&amp;实例元数据&amp;控制角色&amp;AK控制台接管"></a>第94天：云服务篇&amp;弹性计算&amp;云数据库&amp;实例元数据&amp;控制角色&amp;AK控制台接管</h2><p>实例元数据metadata：包含ECS在云服务器厂商中的信息</p>
+<p>RAM访问控制，创建用户</p>
+<p>ram 绑定ecs角色管理</p>
+<p>获取临时凭证</p>
+<p>CF云渗透项目</p>
+<p>SSRF获取&#x2F;服务器权限进行横向</p>
+<p>STS接口权限</p>
+<p>可惜网安实际无通杀，学了之后也很难知道究竟哪些会容易出现</p>
+<p>购买云数据库：VPC 交换机 只允许内网地址的连接</p>
+<h2 id="第95天：云原生篇-Docker安全-权限环境检测-容器逃逸-特权模式-危险挂载"><a href="#第95天：云原生篇-Docker安全-权限环境检测-容器逃逸-特权模式-危险挂载" class="headerlink" title="第95天：云原生篇&amp;Docker安全&amp;权限环境检测&amp;容器逃逸&amp;特权模式&amp;危险挂载"></a>第95天：云原生篇&amp;Docker安全&amp;权限环境检测&amp;容器逃逸&amp;特权模式&amp;危险挂载</h2><p>其实从20min，容器逃逸听就行，前面的介绍和常见攻击方式没必要听</p>
+<p><a target="_blank" rel="noopener" href="https://wiki.teamssix.com/CloudNative/">云原生 | T Wiki</a></p>
+<p>后渗透-容器逃逸：</p>
+<p>特权模式启动</p>
+<p>危险挂载启动</p>
+<p>docker自身或系统漏洞</p>
+<p>判断docker：查询cgroup信息、mount、docker、（高权限低权限查到的结果也不同）</p>
+<p>没拿到权限：端口扫描，详细信息</p>
+<blockquote>
+<p>拿到docker权限能内网扫描或ssrf吗</p>
+</blockquote>
+<p>磁盘挂载后，写入真机反弹shell</p>
+<p>dev&#x2F;sda1 具体是</p>
+<p>挂载docker socket逃逸；procfs容器</p>
+<p>容器内创建新容器，之后宿主机挂载到新容器</p>
+<p>java的webshell通常能是root；PHP的则可能是www-data普通用户权限</p>
+<blockquote>
+<p>这一段真的得实操复现</p>
+</blockquote>
+<h2 id="第96天：云原生篇-Docker安全-系统内核-版本漏洞-CDK自动利用-容器逃逸"><a href="#第96天：云原生篇-Docker安全-系统内核-版本漏洞-CDK自动利用-容器逃逸" class="headerlink" title="第96天：云原生篇&amp;Docker安全&amp;系统内核&amp;版本漏洞&amp;CDK自动利用&amp;容器逃逸"></a>第96天：云原生篇&amp;Docker安全&amp;系统内核&amp;版本漏洞&amp;CDK自动利用&amp;容器逃逸</h2><p>Docker的本身的漏洞 买个服务器，构建出特定版本的docker环境</p>
+<p>19-5736 runC容器逃逸</p>
+<p>go语言的POC，需要等待管理员exec 进入执行 编译后上传，避免流量太大</p>
+<p>CDK 容器渗透框架<a target="_blank" rel="noopener" href="https://github.com/cdk-team/CDK">cdk-team&#x2F;CDK: 📦 Make security testing of K8s, Docker, and Containerd easier.</a></p>
+<p>这东西我觉得是你的问题,既然知道会有影响,在备课时候就把镜像导入到本地,要用直接放上去load就好,每次都拉源仓库肯定会影响</p>
+<p>container escape check</p>
+<p>&#x2F;usr&#x2F;local&#x2F;tomcat&#x2F;webapps&#x2F;ROOT&#x2F;temp1.jsp 为什么上传到这个目录</p>
+<h2 id="第97天：云原生篇-Kubernetes-K8s安全-API-Kubelet未授权访问-容器执行"><a href="#第97天：云原生篇-Kubernetes-K8s安全-API-Kubelet未授权访问-容器执行" class="headerlink" title="第97天：云原生篇&amp;Kubernetes&amp;K8s安全&amp;API&amp;Kubelet未授权访问&amp;容器执行"></a>第97天：云原生篇&amp;Kubernetes&amp;K8s安全&amp;API&amp;Kubelet未授权访问&amp;容器执行</h2><p>k8s集群：编排云平台多个主机的容器化的应用</p>
+<p>从攻击者视角聊K8s集群安全 列举了各个攻击点的攻击手段API Server未授权 <a target="_blank" rel="noopener" href="https://stack.chaitin.com/techblog/detail/292">K8s下的未授权及利用 - CT Stack 安全社区</a> </p>
+<blockquote>
+<p>博客比视频学习累多了，如果真想通过博客学习，得单独抽精力好的视频，不能泛泛的看，另外，只是看视频，只会带来学到知识的错觉</p>
+</blockquote>
+<p>6443 HTTPS 8080 HTTP</p>
+<p>老版本或新版本开启不安全端口</p>
+<p>Kubelet</p>
+<p>创建pod 挂载在mnt目录 test.yaml</p>
+<p>6443 鉴权不当：system:anonymous用户绑定到cluster-admin用户组，使匿名用户能以管理员身份向集群内部下发指令</p>
+<p>POSTMAN文章踩坑，没看清</p>
+<h2 id="第98天：云原生篇-K8s安全-Config泄漏-Etcd存储-Dashboard鉴权-Proxy暴露"><a href="#第98天：云原生篇-K8s安全-Config泄漏-Etcd存储-Dashboard鉴权-Proxy暴露" class="headerlink" title="第98天：云原生篇&amp;K8s安全&amp;Config泄漏&amp;Etcd存储&amp;Dashboard鉴权&amp;Proxy暴露"></a>第98天：云原生篇&amp;K8s安全&amp;Config泄漏&amp;Etcd存储&amp;Dashboard鉴权&amp;Proxy暴露</h2><p>etcd未授权访问 2379端口 master节点 存放节点的数据</p>
+<p>暴露etcd未授权&#x2F;SSRF解决权限问题-获取secrets&amp;token-token访问API-API Server接管</p>
+<p>client-server-auth取消-&gt;未授权</p>
+<p>还是需证书，需要本地访问，需要借助ssrf</p>
+<p>v2v3的版本访问方式不同</p>
+<p>利用条件苛刻</p>
+<p>Dashboard未授权访问</p>
+<p>端口转发、浏览器导致一直访问不了</p>
+<p>Configfile鉴权文件泄漏</p>
+<p>Kubectl Proxy不安全配置</p>
+<p>需要将某个环境暴露在外</p>
+<p>小迪也不是太熟悉，听着不流畅</p>
+<blockquote>
+<p>很多人连复现的勇气都没有，更别说翻车了</p>
+</blockquote>
+<h2 id="第99天：云原生篇-K8s安全-实战场景-攻击Pod-污点Taint-横向移动-容器逃逸"><a href="#第99天：云原生篇-K8s安全-实战场景-攻击Pod-污点Taint-横向移动-容器逃逸" class="headerlink" title="第99天：云原生篇&amp;K8s安全&amp;实战场景&amp;攻击Pod&amp;污点Taint&amp;横向移动&amp;容器逃逸"></a>第99天：云原生篇&amp;K8s安全&amp;实战场景&amp;攻击Pod&amp;污点Taint&amp;横向移动&amp;容器逃逸</h2><p>污点taint的容忍度决定能否横向移动到k8s的master节点</p>
+<p><a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/docs/concepts/scheduling-eviction/taint-and-toleration/">污点和容忍度 | Kubernetes</a> 复杂 类似OS的调度</p>
+<p>传上去木马后，k8s上的服务器木马的路径都能访问</p>
+<p>bypass 容器环境判断</p>
+<p>docker逃逸困难，选择api server未授权、创建pod挂载目录的镜像「因为api server的页面可能访问不到，需要外部渗透后」</p>
+<p>账号密码固定写好，每次的bash命令，没有实时的bash ｜｜ 计划任务写入反弹shell</p>
+<p>k8s的节点分配规则 overrides spec node1 指定node</p>
+<p>唉，老师也是现讲现学</p>
+<h2 id="第100天：云产品篇-堡垒机场景-JumpServer-绿盟SAS-Teleport-麒麟-齐治"><a href="#第100天：云产品篇-堡垒机场景-JumpServer-绿盟SAS-Teleport-麒麟-齐治" class="headerlink" title="第100天：云产品篇&amp;堡垒机场景&amp;JumpServer&amp;绿盟SAS&amp;Teleport&amp;麒麟&amp;齐治"></a>第100天：云产品篇&amp;堡垒机场景&amp;JumpServer&amp;绿盟SAS&amp;Teleport&amp;麒麟&amp;齐治</h2><p>身份鉴别、统一管理、自动运维、安全运营</p>
+<p>堡垒机4A能力</p>
+<p>teltport 小型</p>
+<p>直接do-login 发送数据包</p>
+<p>JumpServer未授权</p>
+<p>42442</p>
+<p>中远麒麟，sql注入 延时注入检测</p>
+<p>齐治堡垒机 未授权 无案例</p>
+<p>绿盟</p>
+<p>篡改软件源，代码托管 供应链攻击</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E3%80%90%E4%BA%91%E5%AE%89%E5%85%A8%E3%80%9193%E5%A4%A9%EF%BC%9A%E4%BA%91%E6%9C%8D%E5%8A%A1%E7%AF%87-%E5%AF%B9%E8%B1%A1%E5%AD%98%E5%82%A8-Bucket%E6%A1%B6-%E4%BB%BB%E6%84%8F%E4%B8%8A%E4%BC%A0-%E5%9F%9F%E5%90%8D%E6%8E%A5%E7%AE%A1-AccessKey%E6%B3%84%E6%BC%8F"><span class="toc-number">1.</span> <span class="toc-text">【云安全】93天：云服务篇&amp;对象存储&amp;Bucket桶&amp;任意上传&amp;域名接管&amp;AccessKey泄漏</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC94%E5%A4%A9%EF%BC%9A%E4%BA%91%E6%9C%8D%E5%8A%A1%E7%AF%87-%E5%BC%B9%E6%80%A7%E8%AE%A1%E7%AE%97-%E4%BA%91%E6%95%B0%E6%8D%AE%E5%BA%93-%E5%AE%9E%E4%BE%8B%E5%85%83%E6%95%B0%E6%8D%AE-%E6%8E%A7%E5%88%B6%E8%A7%92%E8%89%B2-AK%E6%8E%A7%E5%88%B6%E5%8F%B0%E6%8E%A5%E7%AE%A1"><span class="toc-number">2.</span> <span class="toc-text">第94天：云服务篇&amp;弹性计算&amp;云数据库&amp;实例元数据&amp;控制角色&amp;AK控制台接管</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC95%E5%A4%A9%EF%BC%9A%E4%BA%91%E5%8E%9F%E7%94%9F%E7%AF%87-Docker%E5%AE%89%E5%85%A8-%E6%9D%83%E9%99%90%E7%8E%AF%E5%A2%83%E6%A3%80%E6%B5%8B-%E5%AE%B9%E5%99%A8%E9%80%83%E9%80%B8-%E7%89%B9%E6%9D%83%E6%A8%A1%E5%BC%8F-%E5%8D%B1%E9%99%A9%E6%8C%82%E8%BD%BD"><span class="toc-number">3.</span> <span class="toc-text">第95天：云原生篇&amp;Docker安全&amp;权限环境检测&amp;容器逃逸&amp;特权模式&amp;危险挂载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC96%E5%A4%A9%EF%BC%9A%E4%BA%91%E5%8E%9F%E7%94%9F%E7%AF%87-Docker%E5%AE%89%E5%85%A8-%E7%B3%BB%E7%BB%9F%E5%86%85%E6%A0%B8-%E7%89%88%E6%9C%AC%E6%BC%8F%E6%B4%9E-CDK%E8%87%AA%E5%8A%A8%E5%88%A9%E7%94%A8-%E5%AE%B9%E5%99%A8%E9%80%83%E9%80%B8"><span class="toc-number">4.</span> <span class="toc-text">第96天：云原生篇&amp;Docker安全&amp;系统内核&amp;版本漏洞&amp;CDK自动利用&amp;容器逃逸</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC97%E5%A4%A9%EF%BC%9A%E4%BA%91%E5%8E%9F%E7%94%9F%E7%AF%87-Kubernetes-K8s%E5%AE%89%E5%85%A8-API-Kubelet%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE-%E5%AE%B9%E5%99%A8%E6%89%A7%E8%A1%8C"><span class="toc-number">5.</span> <span class="toc-text">第97天：云原生篇&amp;Kubernetes&amp;K8s安全&amp;API&amp;Kubelet未授权访问&amp;容器执行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC98%E5%A4%A9%EF%BC%9A%E4%BA%91%E5%8E%9F%E7%94%9F%E7%AF%87-K8s%E5%AE%89%E5%85%A8-Config%E6%B3%84%E6%BC%8F-Etcd%E5%AD%98%E5%82%A8-Dashboard%E9%89%B4%E6%9D%83-Proxy%E6%9A%B4%E9%9C%B2"><span class="toc-number">6.</span> <span class="toc-text">第98天：云原生篇&amp;K8s安全&amp;Config泄漏&amp;Etcd存储&amp;Dashboard鉴权&amp;Proxy暴露</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC99%E5%A4%A9%EF%BC%9A%E4%BA%91%E5%8E%9F%E7%94%9F%E7%AF%87-K8s%E5%AE%89%E5%85%A8-%E5%AE%9E%E6%88%98%E5%9C%BA%E6%99%AF-%E6%94%BB%E5%87%BBPod-%E6%B1%A1%E7%82%B9Taint-%E6%A8%AA%E5%90%91%E7%A7%BB%E5%8A%A8-%E5%AE%B9%E5%99%A8%E9%80%83%E9%80%B8"><span class="toc-number">7.</span> <span class="toc-text">第99天：云原生篇&amp;K8s安全&amp;实战场景&amp;攻击Pod&amp;污点Taint&amp;横向移动&amp;容器逃逸</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC100%E5%A4%A9%EF%BC%9A%E4%BA%91%E4%BA%A7%E5%93%81%E7%AF%87-%E5%A0%A1%E5%9E%92%E6%9C%BA%E5%9C%BA%E6%99%AF-JumpServer-%E7%BB%BF%E7%9B%9FSAS-Teleport-%E9%BA%92%E9%BA%9F-%E9%BD%90%E6%B2%BB"><span class="toc-number">8.</span> <span class="toc-text">第100天：云产品篇&amp;堡垒机场景&amp;JumpServer&amp;绿盟SAS&amp;Teleport&amp;麒麟&amp;齐治</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&text=云安全-小迪安全"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=云安全-小迪安全"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&is_video=false&description=云安全-小迪安全"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=云安全-小迪安全&body=Check out this article: http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=云安全-小迪安全"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=云安全-小迪安全"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=云安全-小迪安全"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&title=云安全-小迪安全"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&name=云安全-小迪安全&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2025/08/04/%E4%BA%91%E5%AE%89%E5%85%A8-%E5%B0%8F%E8%BF%AA%E5%AE%89%E5%85%A8/&t=云安全-小迪安全"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2025
+    flyAstar
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="http://github.com/probberechts">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
